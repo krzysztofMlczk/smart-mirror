@@ -5,3 +5,8 @@
 /*
  * This file might be usefull for global styles overrides
  */
+
+body {
+  color: #ffffff;
+  background-color: #000000;
+}
