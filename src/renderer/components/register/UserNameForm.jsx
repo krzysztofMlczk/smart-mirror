@@ -46,21 +46,22 @@ const UserNameForm = ({ next }) => {
 
   return (
     <Container maxWidth="xs">
-      <Box textAlign="center">
-        <TextField
-          fullWidth
-          label="Username"
-          color="secondary"
-          error={errorOccured}
-          helperText={error}
-          autoFocus={false}
-          value={username}
-          onChange={handleChange}
-        />
+      <TextField
+        fullWidth
+        label="Username"
+        color="secondary"
+        error={errorOccured}
+        helperText={error}
+        autoFocus={false}
+        value={username}
+        onChange={handleChange}
+      />
+      <Box textAlign="center" mt={5}>
         <BackNextBtn
           variant="next"
           disabled={userNameEmpty || errorOccured}
           onClick={onNext}
+          // style={{ marginTop: '40px' }}
         >
           Next
         </BackNextBtn>
