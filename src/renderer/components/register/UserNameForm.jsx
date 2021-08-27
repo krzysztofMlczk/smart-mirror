@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+
+import BackNextBtn from '../buttons/BackNextBtn';
 
 const UserNameForm = ({ next }) => {
   const [username, setUsername] = useState('');
@@ -57,17 +57,13 @@ const UserNameForm = ({ next }) => {
           value={username}
           onChange={handleChange}
         />
-        <Button
-          variant="outlined"
-          color="secondary"
-          size="large"
+        <BackNextBtn
+          variant="next"
           disabled={userNameEmpty || errorOccured}
           onClick={onNext}
-          endIcon={<ArrowForwardIosIcon />}
-          style={{ marginTop: '40px' }}
         >
           Next
-        </Button>
+        </BackNextBtn>
       </Box>
     </Container>
   );
