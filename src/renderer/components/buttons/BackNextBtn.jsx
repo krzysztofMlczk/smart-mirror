@@ -17,7 +17,6 @@ const BackNextBtn = ({ variant, children, disabled, onClick }) => {
       onClick={onClick}
       startIcon={startIcon}
       endIcon={endIcon}
-      style={{ marginTop: '40px' }}
     >
       {text}
     </Button>
