@@ -61,7 +61,6 @@ const UserNameForm = ({ next }) => {
           variant="next"
           disabled={userNameEmpty || errorOccured}
           onClick={onNext}
-          // style={{ marginTop: '40px' }}
         >
           Next
         </BackNextBtn>
