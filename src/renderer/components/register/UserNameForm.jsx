@@ -5,8 +5,8 @@ import Container from '@material-ui/core/Container';
 
 import BackNextBtn from '../buttons/BackNextBtn';
 
-const UserNameForm = ({ next }) => {
-  const [username, setUsername] = useState('');
+const UserNameForm = ({ next, userName, saveUserName }) => {
+  const [username, setUsername] = useState(userName);
   const [error, setError] = useState(' ');
 
   const userNameEmpty = username === '';
@@ -40,6 +40,7 @@ const UserNameForm = ({ next }) => {
 
   const onNext = () => {
     if (validate(username)) {
+      saveUserName(username);
       next();
     }
   };
