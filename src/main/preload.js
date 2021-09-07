@@ -1,23 +1,10 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge } = require('electron');
+// import middleware API
+const middleware = require('../backend/middleware/index');
 
-contextBridge.exposeInMainWorld('electron', {
-  ipcRenderer: {
-    myPing() {
-      ipcRenderer.send('ipc-example', 'ping');
-    },
-    on(channel, func) {
-      const validChannels = ['ipc-example'];
-      if (validChannels.includes(channel)) {
-        // Deliberately strip event as it includes `sender`
-        ipcRenderer.on(channel, (event, ...args) => func(...args));
-      }
-    },
-    once(channel, func) {
-      const validChannels = ['ipc-example'];
-      if (validChannels.includes(channel)) {
-        // Deliberately strip event as it includes `sender`
-        ipcRenderer.once(channel, (event, ...args) => func(...args));
-      }
-    },
-  },
-});
+// expose middleware API so it is accessible in the renderer process like so:
+// window.middleware.users.createUser(...)
+// window.middleware.settings.setSettings(...)
+// etc.
+// for more details see how middleware API object is structured
+contextBridge.exposeInMainWorld('middleware', middleware);
