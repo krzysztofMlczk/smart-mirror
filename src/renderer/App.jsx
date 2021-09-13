@@ -1,7 +1,8 @@
 import React from 'react';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { MemoryRouter as Router, Switch, Route } from 'react-router-dom';
-import GoogleCredentials from './components/register/GoogleCredentials';
+import Hello from './components/hello/Hello';
+import Register from './components/register/Register';
 import theme from './theme/theme';
 import './App.global.css';
 
@@ -11,7 +12,7 @@ export default function App() {
       <Router>
         <Switch>
           <Route path="/">
-            <GoogleCredentials />
+            <Register />
           </Route>
         </Switch>
       </Router>
