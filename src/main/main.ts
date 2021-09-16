@@ -11,7 +11,7 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -25,7 +25,61 @@ export default class AppUpdater {
   }
 }
 
-let mainWindow: BrowserWindow | null = null;
+let mainWindow: BrowserWindow | null;
+
+ipcMain.handle('google-auth-modal', (_event, authUrl) => {
+  return new Promise((resolve, reject) => {
+    const authWindow = new BrowserWindow({
+      parent: mainWindow as BrowserWindow | undefined,
+      modal: true,
+      show: false,
+      frame: false, // might change in the future (when user will be allowed to close the modal)
+      center: true,
+      resizable: false,
+      webPreferences: {
+        devTools: false,
+      },
+    });
+
+    function handleNavigation(url: string) {
+      const urlParams = new URLSearchParams(url.split('?')[1]);
+      if (urlParams) {
+        if (urlParams.has('error')) {
+          authWindow.close();
+          reject(new Error(`There was an error: ${urlParams.get('error')}`));
+        } else if (urlParams.has('code')) {
+          // Login is complete
+          // authWindow.removeAllListeners('closed'); - use it when user will be allowed to close the modal (DO THIS BEFORE closing!!!)
+          authWindow.close();
+          // This is the authorization code we need to request tokens
+          resolve(urlParams.get('code'));
+        }
+      }
+    }
+
+    /**
+     * TODO:
+     *  - implement custom title bar with close 'x' button
+     *  - allow user to close google-auth-modal with 'x' button anytime
+     *  - throw error on closing and adjust UI
+     *  below code will be useful for that
+     */
+    // authWindow.on('closed', () => {
+    //   // TODO: Handle this smoothly
+    //   throw new Error('Auth window was closed by user');
+    // });
+
+    authWindow.webContents.on('will-navigate', (_ev, url) => {
+      handleNavigation(url);
+    });
+
+    authWindow.loadURL(authUrl);
+    // show the modal window after 'ready-to-show' event prevents visual flash
+    authWindow.once('ready-to-show', () => {
+      authWindow.show();
+    });
+  });
+});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -70,10 +124,13 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
-    height: 728,
+    width: 1920,
+    height: 1080,
+    fullscreen: false, // set to true
+    frame: true, // set to false
     icon: getAssetPath('icon.png'),
     webPreferences: {
+      devTools: true, // set to false
       preload: path.join(__dirname, 'preload.js'),
     },
   });

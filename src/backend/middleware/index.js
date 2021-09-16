@@ -1,9 +1,11 @@
 const users = require('./users');
 const settings = require('./settings');
+const googleSignIn = require('../google/index');
 
 module.exports = {
   users,
   settings,
+  googleSignIn,
   // ...
 };
 
