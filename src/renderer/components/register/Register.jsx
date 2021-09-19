@@ -7,7 +7,7 @@ import ScreenOrientationChooser from './ScreenOrientationChooser';
 import UserNameForm from './UserNameForm';
 import AvatarChooser from './AvatarChooser';
 import CustomStepper from './CustomStepper';
-import GoogleCredentials from './GoogleCredentials';
+import GoogleCredentials from './googleCredentials/GoogleCredentials';
 
 function getSteps() {
   return [
@@ -30,6 +30,7 @@ const Register = () => {
   const [orientation, setOrientation] = useState(null);
   const [userName, setUserName] = useState('');
   const [avatar, setAvatar] = useState(null);
+  const [user, setUser] = useState(null);
   const steps = getSteps();
 
   const next = () => {
@@ -70,7 +71,14 @@ const Register = () => {
           />
         );
       case 3:
-        return <GoogleCredentials />;
+        return (
+          <GoogleCredentials
+            next={next}
+            back={back}
+            user={user}
+            saveUser={setUser}
+          />
+        );
       default:
         return <UserNameForm next={next} />;
     }
