@@ -50,12 +50,15 @@ async function fetchGoogleProfile(accessToken) {
 async function signIn() {
   const code = await signInWithPopup(); // authorization code needed to request tokens
   const tokens = await fetchAccessTokens(code);
-  const { id, email, name } = await fetchGoogleProfile(tokens.access_token);
+  const { id, email, name, picture } = await fetchGoogleProfile(
+    tokens.access_token
+  );
   const providedUser = {
     uid: id,
     email,
     displayName: name,
     idToken: tokens.id_token,
+    pictureUrl: picture,
   };
   // console.table(providedUser);
   return providedUser;
