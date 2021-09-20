@@ -5,163 +5,163 @@
 namespace event
 {
 #define EVENT_NAME(name) \
-    virtual std::string GetName() const { return #name; }
+  virtual std::string GetName() const { return #name; }
 
-    class IEvent
+  class IEvent
+  {
+  public:
+    virtual ~IEvent() = default;
+    virtual std::string GetName() const = 0;
+    virtual std::string PrepareCommand() const {ASSERT(false, "Not implemented!")};
+  };
+
+  // ----- FROM FACE DETECTOR -----
+
+  class EventProgressReport : public IEvent
+  {
+  public:
+    EVENT_NAME(evtProgressReport)
+
+    EventProgressReport(uint32_t currentStep, uint32_t stepCount)
+        : m_currentStep(currentStep), m_stepCount(stepCount) {}
+
+    virtual ~EventProgressReport() = default;
+
+    std::string PrepareCommand() const override
     {
-    public:
-        virtual ~IEvent() = default;
-        virtual std::string GetName() const = 0;
-        virtual std::string PrepareCommand() const {ASSERT(false, "Not implemented!")};
-    };
+      float percentage = m_currentStep * 100.0 / m_stepCount;
+      return std::string("progress ") + std::to_string(percentage);
+    }
 
-    // ----- FROM FACE DETECTOR -----
+    uint32_t m_currentStep;
+    uint32_t m_stepCount;
+  };
 
-    class EventProgressReport : public IEvent
+  class EventErrorOccured : public IEvent
+  {
+  public:
+    EVENT_NAME(evtErrorOccured)
+
+    EventErrorOccured(const std::string &message)
+        : m_message(message) {}
+
+    virtual ~EventErrorOccured() = default;
+
+    std::string PrepareCommand() const override
     {
-    public:
-        EVENT_NAME(evtProgressReport)
+      return std::string("error ") + m_message;
+    }
 
-        EventProgressReport(uint32_t currentStep, uint32_t stepCount)
-            : m_currentStep(currentStep), m_stepCount(stepCount) {}
+    std::string m_message;
+  };
 
-        virtual ~EventProgressReport() = default;
+  class EventFatalOccured : public IEvent
+  {
+  public:
+    EVENT_NAME(evtFatalOccured)
 
-        std::string PrepareCommand() const override
-        {
-            float percentage = m_currentStep * 100.0 / m_stepCount;
-            return std::string("progress ") + std::to_string(percentage);
-        }
+    EventFatalOccured(const std::string &message, int exitCode)
+        : m_message(message), m_exitCode(exitCode) {}
 
-        uint32_t m_currentStep;
-        uint32_t m_stepCount;
-    };
+    virtual ~EventFatalOccured() = default;
 
-    class EventErrorOccured : public IEvent
+    std::string PrepareCommand() const override
     {
-    public:
-        EVENT_NAME(evtErrorOccured)
+      return std::string("fatal ") + m_message + std::string(" ") +
+             std::to_string(m_exitCode);
+    }
 
-        EventErrorOccured(const std::string &message)
-            : m_message(message) {}
+    std::string m_message;
+    int m_exitCode;
+  };
 
-        virtual ~EventErrorOccured() = default;
+  class EventFaceRecognized : public IEvent
+  {
+  public:
+    EVENT_NAME(evtFaceRecognized)
 
-        std::string PrepareCommand() const override
-        {
-            return std::string("error ") + m_message;
-        }
+    EventFaceRecognized(const std::string &predictedUser, float certainty)
+        : m_predictedUser(predictedUser), m_certainty(certainty) {}
 
-        std::string m_message;
-    };
+    virtual ~EventFaceRecognized() = default;
 
-    class EventFatalOccured : public IEvent
+    std::string PrepareCommand() const override
     {
-    public:
-        EVENT_NAME(evtFatalOccured)
+      return std::string("recognized ") + m_predictedUser + std::string(" ") +
+             std::to_string(m_certainty);
+    }
 
-        EventFatalOccured(const std::string &message, int exitCode)
-            : m_message(message), m_exitCode(exitCode) {}
+    std::string m_predictedUser;
+    float m_certainty;
+  };
 
-        virtual ~EventFatalOccured() = default;
+  class EventUserRegistered : public IEvent
+  {
+  public:
+    EVENT_NAME(evtUserRegistered)
 
-        std::string PrepareCommand() const override
-        {
-            return std::string("fatal ") + m_message + std::string("; exit code: ") +
-                   std::to_string(m_exitCode);
-        }
+    EventUserRegistered(const std::string &username)
+        : m_username(username) {}
 
-        std::string m_message;
-        int m_exitCode;
-    };
+    virtual ~EventUserRegistered() = default;
 
-    class EventFaceRecognized : public IEvent
+    std::string PrepareCommand() const override
     {
-    public:
-        EVENT_NAME(evtFaceRecognized)
+      return std::string("registered ") + m_username;
+    }
 
-        EventFaceRecognized(const std::string &predictedUser, float certainty)
-            : m_predictedUser(predictedUser), m_certainty(certainty) {}
+    std::string m_username;
+  };
 
-        virtual ~EventFaceRecognized() = default;
+  // ----- FROM ELECTRON -----
 
-        std::string PrepareCommand() const override
-        {
-            return std::string("recognized ") + m_predictedUser + std::string(", ") +
-                   std::to_string(m_certainty);
-        }
+  class EventStartRecognize : public IEvent
+  {
+  public:
+    EVENT_NAME(evtStartRecognize)
 
-        std::string m_predictedUser;
-        float m_certainty;
-    };
+    EventStartRecognize() = default;
+    virtual ~EventStartRecognize() = default;
+  };
 
-    class EventUserRegistered : public IEvent
-    {
-    public:
-        EVENT_NAME(evtUserRegistered)
+  class EventStartRegister : public IEvent
+  {
+  public:
+    EVENT_NAME(evtStartRegister)
 
-        EventUserRegistered(const std::string &username)
-            : m_username(username) {}
+    EventStartRegister(const std::string &username)
+        : m_username(username) {}
 
-        virtual ~EventUserRegistered() = default;
+    virtual ~EventStartRegister() = default;
 
-        std::string PrepareCommand() const override
-        {
-            return std::string("registered ") + m_username;
-        }
+    std::string m_username;
+  };
 
-        std::string m_username;
-    };
+  class EventSleep : public IEvent
+  {
+  public:
+    EVENT_NAME(evtSleep)
 
-    // ----- FROM ELECTRON -----
+    EventSleep() = default;
+    virtual ~EventSleep() = default;
+  };
 
-    class EventStartRecognize : public IEvent
-    {
-    public:
-        EVENT_NAME(evtStartRecognize)
+  class EventWakeup : public IEvent
+  {
+  public:
+    EVENT_NAME(evtWakeup)
 
-        EventStartRecognize() = default;
-        virtual ~EventStartRecognize() = default;
-    };
+    EventWakeup() = default;
+    virtual ~EventWakeup() = default;
+  };
 
-    class EventStartRegister : public IEvent
-    {
-    public:
-        EVENT_NAME(evtStartRegister)
+  class EventStop : public IEvent
+  {
+  public:
+    EVENT_NAME(evtStop)
 
-        EventStartRegister(const std::string &username)
-            : m_username(username) {}
-
-        virtual ~EventStartRegister() = default;
-
-        std::string m_username;
-    };
-
-    class EventSleep : public IEvent
-    {
-    public:
-        EVENT_NAME(evtSleep)
-
-        EventSleep() = default;
-        virtual ~EventSleep() = default;
-    };
-
-    class EventWakeup : public IEvent
-    {
-    public:
-        EVENT_NAME(evtWakeup)
-
-        EventWakeup() = default;
-        virtual ~EventWakeup() = default;
-    };
-
-    class EventStop : public IEvent
-    {
-    public:
-        EVENT_NAME(evtStop)
-
-        EventStop() = default;
-        virtual ~EventStop() = default;
-    };
+    EventStop() = default;
+    virtual ~EventStop() = default;
+  };
 
 } // namespace event
