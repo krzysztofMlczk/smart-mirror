@@ -1,9 +1,8 @@
-/* This code sets up the neDB */
 const { app } = require('electron');
 const Datastore = require('nedb-promises');
 
 // function for creating datastores (aka. database collections)
-const dsFactory = (fileName) =>
+const dataStoreFactory = (fileName) =>
   Datastore.create({
     filename: `${
       process.env.NODE_ENV === 'development' ? '.' : app.getAppPath('userData')
@@ -12,11 +11,4 @@ const dsFactory = (fileName) =>
     autoload: true, // enable autoloading for collections
   });
 
-// create db object
-const db = {
-  users: dsFactory('users.db'),
-  settings: dsFactory('settings.db'),
-  // ... add here other collections if necessary
-};
-// export db object, so the middleware functions can make CRUD operations
-module.exports = db;
+module.exports = dataStoreFactory;
