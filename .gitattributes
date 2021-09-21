@@ -10,3 +10,6 @@
 *.ttf   binary
 *.woff  binary
 *.woff2 binary
+*.so	binary
+
+externals/face_recognizer/lib/*	binary

@@ -1,64 +1,60 @@
 #include "commands.hpp"
+#include "stringUtils.hpp"
 
 namespace command
 {
-    uint16_t ICommand::MAX_NAME_LENGTH = 128;
+  uint16_t ICommand::MAX_NAME_LENGTH = 128;
 
-    ICommand::ICommand(std::string cmdName, uint8_t paramCount)
-        : m_paramCount(paramCount), m_cmdName(cmdName)
+  ICommand::ICommand(std::string cmdName, uint8_t paramCount)
+      : m_paramCount(paramCount), m_cmdName(cmdName)
+  {
+    DECLARE_COMMAND
+    ASSERT(cmdName.size() <= MAX_NAME_LENGTH, "Command name exceeded max length!");
+  }
+
+  std::vector<std::string> splitToWords(std::string line)
+  {
+    std::vector<std::string> words;
+    std::string currentWord;
+
+    for (size_t i = 0; i < line.size(); ++i)
     {
-        DECLARE_COMMAND
-        ASSERT(cmdName.size() <= MAX_NAME_LENGTH, "Command name exceeded max length!");
+      if (utils::IsSeparator(line[i]) && !utils::IsEscaped(line, i) && currentWord.size() > 0)
+      {
+        words.push_back(utils::RemoveEscape(currentWord));
+        currentWord.clear();
+      }
+      else
+      {
+        currentWord += line[i];
+      }
     }
 
-    bool isSeparator(char c)
-    {
-        return isblank(c);
-    }
+    return words;
+  }
 
-    std::vector<std::string> splitToWords(std::string line)
-    {
-        std::vector<std::string> words;
-        std::string currentWord;
+  const ICommand *parseCommand(std::string line)
+  {
+    std::vector<std::string> tokens = splitToWords(line);
 
-        for (size_t i = 0; i < line.size(); ++i)
+    if (tokens.size())
+    {
+      std::string cmdName = tokens[0];
+      tokens.erase(tokens.begin());
+
+      for (ICommand *cmd : s_commands)
+      {
+        if (cmdName == cmd->m_cmdName)
         {
-            if (isSeparator(line[i]) && currentWord.size() > 0)
-            {
-                words.push_back(currentWord);
-                currentWord.clear();
-            }
-            else
-            {
-                currentWord += line[i];
-            }
-        }
+          ASSERT(tokens.size() >= cmd->m_paramCount,
+                 "Not enought command parameters specified!");
 
-        return words;
+          cmd->feed(tokens);
+          return cmd;
+        }
+      }
     }
 
-    const ICommand *parseCommand(std::string line)
-    {
-        std::vector<std::string> tokens = splitToWords(line);
-
-        if (tokens.size())
-        {
-            std::string cmdName = tokens[0];
-            tokens.erase(tokens.begin());
-
-            for (ICommand *cmd : s_commands)
-            {
-                if (cmdName == cmd->m_cmdName)
-                {
-                    ASSERT(tokens.size() >= cmd->m_paramCount,
-                           "Not enought command parameters specified!");
-
-                    cmd->feed(tokens);
-                    return cmd;
-                }
-            }
-        }
-
-        return nullptr;
-    }
+    return nullptr;
+  }
 } // namespace commands

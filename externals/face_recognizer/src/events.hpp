@@ -1,6 +1,9 @@
 #pragma once
 #include <string>
+#include "stringUtils.hpp"
 #include "macros.hpp"
+
+using namespace utils;
 
 namespace event
 {
@@ -49,7 +52,7 @@ namespace event
 
     std::string PrepareCommand() const override
     {
-      return std::string("error ") + m_message;
+      return std::string("error ") + Escape(m_message);
     }
 
     std::string m_message;
@@ -67,7 +70,7 @@ namespace event
 
     std::string PrepareCommand() const override
     {
-      return std::string("fatal ") + m_message + std::string(" ") +
+      return std::string("fatal ") + Escape(m_message) + std::string(" ") +
              std::to_string(m_exitCode);
     }
 
@@ -87,7 +90,7 @@ namespace event
 
     std::string PrepareCommand() const override
     {
-      return std::string("recognized ") + m_predictedUser + std::string(" ") +
+      return std::string("recognized ") + Escape(m_predictedUser) + std::string(" ") +
              std::to_string(m_certainty);
     }
 
@@ -107,7 +110,7 @@ namespace event
 
     std::string PrepareCommand() const override
     {
-      return std::string("registered ") + m_username;
+      return std::string("registered ") + Escape(m_username);
     }
 
     std::string m_username;
