@@ -185,7 +185,7 @@ void FaceDetector::Train()
   if (images.size() == 0)
   {
     std::string errorMessage = "The dataset is empty - cannot recognize! Switching into sleep state.";
-    LOG_ERROR(errorMessage.c_str());
+    LOG_ERROR("%s", errorMessage.c_str());
     NotifyObserversAbout(new EventErrorOccured(errorMessage));
     Sleep();
 
