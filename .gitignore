@@ -29,7 +29,7 @@ npm-debug.log.*
 *.scss.d.ts
 
 # Google keys
-src/backend/google/keys.json
+src/middleware/google/keys.json
 
 # Database
 data/*

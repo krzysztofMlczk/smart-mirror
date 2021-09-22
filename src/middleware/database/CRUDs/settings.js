@@ -1,4 +1,5 @@
-const db = require('../database/setup');
+/* HERE ARE FUNCTIONS TO PERFORM CRUD OPERATIONS ON settings COLLECTION */
+const db = require('../setup');
 
 const setSettings = async () => {
   // TODO: implement body of this function

@@ -47,7 +47,7 @@ async function fetchGoogleProfile(accessToken) {
   return response;
 }
 
-async function googleSignIn() {
+async function signIn() {
   const code = await signInWithPopup(); // authorization code needed to request tokens
   const tokens = await fetchAccessTokens(code);
   const { id, email, name } = await fetchGoogleProfile(tokens.access_token);
@@ -61,4 +61,4 @@ async function googleSignIn() {
   return providedUser;
 }
 
-module.exports = googleSignIn;
+module.exports = signIn;
