@@ -1,12 +1,12 @@
 /* THIS FILE SETs UP db OBJECT WHICH WILL BE EXPOSED via middleware
 to the renderer process to make it possible to call functions, which perform
 database CRUD operations (like creating user, deleting user, etc.) */
-const Collection = require('./Collection');
-const dsFactory = require('./dataStoreFactory');
+const users = require('./CRUDs/users');
+const settings = require('./CRUDs/settings');
 
 // export db object, to make it accessible in the middleware
 module.exports = {
-  users: new Collection(dsFactory('users.db')),
-  settings: new Collection(dsFactory('settings.db')),
-  // ... add here other collections if necessary
+  users, // object containing functions to perform CRUD operations on users collection
+  settings, // object containing functions to perform CRUD operations on settings collection
+  // ... add other objects to perfom CRUD operations on other colletions
 };
