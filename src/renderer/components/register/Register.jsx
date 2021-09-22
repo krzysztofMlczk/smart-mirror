@@ -84,20 +84,18 @@ const Register = () => {
   };
 
   return (
-    <>
-      <Grid
-        container
-        direction="column"
-        justifyContent="space-around"
-        style={{ height: '100vh' }}
-      >
-        <Typography align="center" variant="h2">
-          {steps[step].title}
-        </Typography>
-        {getCurrentStepContent(step)}
-        <CustomStepper activeStepIndex={step} steps={steps} />
-      </Grid>
-    </>
+    <Grid
+      container
+      direction="column"
+      justifyContent="space-between"
+      style={{ height: '90vh', margin: '5vh 0' }}
+    >
+      <Typography align="center" variant="h2">
+        {steps[step].title}
+      </Typography>
+      {getCurrentStepContent(step)}
+      <CustomStepper activeStepIndex={step} steps={steps} />
+    </Grid>
   );
 };
 
