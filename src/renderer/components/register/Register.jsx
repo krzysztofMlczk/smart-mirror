@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 
 import ScreenOrientationChooser from './ScreenOrientationChooser';
@@ -85,7 +84,7 @@ const Register = () => {
   };
 
   return (
-    <Container maxWidth="xl">
+    <>
       <Grid
         container
         direction="column"
@@ -98,7 +97,7 @@ const Register = () => {
         {getCurrentStepContent(step)}
         <CustomStepper activeStepIndex={step} steps={steps} />
       </Grid>
-    </Container>
+    </>
   );
 };
 

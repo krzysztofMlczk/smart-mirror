@@ -4,6 +4,7 @@ import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import StepConnector from '@material-ui/core/StepConnector';
+import Container from '@material-ui/core/Container';
 import { withStyles } from '@material-ui/core/styles';
 
 const CustomIcon = withStyles({
@@ -44,20 +45,22 @@ const CustomConnector = withStyles({
 
 const CustomStepper = ({ activeStepIndex, steps }) => {
   return (
-    <Stepper
-      alternativeLabel
-      activeStep={activeStepIndex}
-      connector={<CustomConnector />}
-      style={{ backgroundColor: 'transparent' }}
-    >
-      {steps.map((step) => (
-        <Step key={step.bottomLabel}>
-          <StepLabel StepIconComponent={CustomIcon}>
-            {step.bottomLabel}
-          </StepLabel>
-        </Step>
-      ))}
-    </Stepper>
+    <Container maxWidth="xl">
+      <Stepper
+        alternativeLabel
+        activeStep={activeStepIndex}
+        connector={<CustomConnector />}
+        style={{ backgroundColor: 'transparent' }}
+      >
+        {steps.map((step) => (
+          <Step key={step.bottomLabel}>
+            <StepLabel StepIconComponent={CustomIcon}>
+              {step.bottomLabel}
+            </StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+    </Container>
   );
 };
 

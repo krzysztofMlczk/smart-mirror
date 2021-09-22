@@ -11,8 +11,8 @@ const GoogleCredentials = ({ next, back, user, saveUser }) => {
   const [currentUser, setCurrentUser] = useState(user);
 
   const beginAuthorization = () => {
-    window.middleware
-      .googleSignIn()
+    window.middleware.google
+      .signIn()
       .then((authorizedUser) => setCurrentUser(authorizedUser))
       .catch((err) => console.error(err));
   };
