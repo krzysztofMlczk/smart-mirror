@@ -7,6 +7,7 @@ import UserNameForm from './UserNameForm';
 import AvatarChooser from './AvatarChooser';
 import CustomStepper from './CustomStepper';
 import GoogleCredentials from './googleCredentials/GoogleCredentials';
+import FaceScanner from './FaceScanner';
 
 function getSteps() {
   return [
@@ -25,7 +26,7 @@ const Register = () => {
   //   avatar: '',
   //   faceScan: '',
   // });
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(4);
   const [orientation, setOrientation] = useState(null);
   const [userName, setUserName] = useState('');
   const [avatar, setAvatar] = useState(null);
@@ -33,11 +34,11 @@ const Register = () => {
   const steps = getSteps();
 
   const next = () => {
-    setStep((step + 1) % 4);
+    setStep((step + 1) % 5);
   };
 
   const back = () => {
-    setStep((step - 1) % 4);
+    setStep((step - 1) % 5);
   };
 
   // WARNING: need to implement logic related to when ScreenOrientationChooser
@@ -78,6 +79,8 @@ const Register = () => {
             saveUser={setUser}
           />
         );
+      case 4:
+        return <FaceScanner />;
       default:
         return <UserNameForm next={next} />;
     }
