@@ -4,6 +4,7 @@
 #include "faceDetection.hpp"
 #include "communicatorListener.hpp"
 #include "communicatorSender.hpp"
+#include "paramsParser.hpp"
 
 #include <mutex>
 #include <queue>
@@ -13,19 +14,19 @@ using namespace event;
 class EventDispatcher : public IEventObserver
 {
 public:
-    EventDispatcher(uint16_t communicationPort, FaceDetector *faceDetector);
-    ~EventDispatcher() = default;
+  EventDispatcher(AppSettings settings, FaceDetector *faceDetector);
+  ~EventDispatcher();
 
-    virtual void NotifyAbout(IEvent *event) override;
-    void Dispatch();
+  virtual void NotifyAbout(IEvent *event) override;
+  void Dispatch();
 
 private:
-    CommunicatorListenerThread communicatorListener;
-    CommunicatorSenderThread communicatorSender;
-    FaceDetector *m_faceDetector;
+  CommunicatorListenerThread communicatorListener;
+  CommunicatorSenderThread communicatorSender;
+  FaceDetector *m_faceDetector;
 
-    std::mutex m_mutexNotify;
-    std::queue<IEvent *> m_eventQueue;
+  std::mutex m_mutexNotify;
+  std::queue<IEvent *> m_eventQueue;
 
-    void DispatchEvent(IEvent *evt);
+  void DispatchEvent(IEvent *evt);
 };

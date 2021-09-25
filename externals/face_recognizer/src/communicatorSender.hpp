@@ -13,24 +13,25 @@ using namespace event;
 class CommunicatorSenderThread : public IThread
 {
 public:
-    CommunicatorSenderThread(uint16_t port) : m_port(port){};
-    virtual ~CommunicatorSenderThread() = default;
+  CommunicatorSenderThread(uint16_t port, uint16_t bufferSize)
+      : BUFFER_SIZE(bufferSize), m_port(port){};
+  virtual ~CommunicatorSenderThread();
 
-    void sendEvent(IEvent *evt);
+  void sendEvent(IEvent *evt);
 
 private:
-    uint16_t BUFFER_SIZE = 255;
-    const char *LOCALHOST = "127.0.0.1";
+  uint16_t BUFFER_SIZE;
+  const char *LOCALHOST = "127.0.0.1";
 
-    uint16_t m_port;
-    int m_socketFD;
-    struct sockaddr_in m_address;
-    std::mutex m_sendMutex;
+  uint16_t m_port;
+  int m_socketFD;
+  struct sockaddr_in m_address;
+  std::mutex m_sendMutex;
 
-    std::queue<std::string> m_commandQueue;
+  std::queue<std::string> m_commandQueue;
 
-    virtual void ThreadFunction() override;
+  virtual void ThreadFunction() override;
 
-    virtual void ThreadPreStart() override;
-    virtual void ThreadPreExit() override;
+  virtual void ThreadPreStart() override;
+  virtual void ThreadPreExit() override;
 };
