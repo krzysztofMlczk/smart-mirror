@@ -33,3 +33,6 @@ src/middleware/google/keys.json
 
 # Database
 data/*
+
+# Face recognizer
+externals/face_recognizer/facedata

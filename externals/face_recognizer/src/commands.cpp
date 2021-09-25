@@ -52,7 +52,7 @@ namespace command
         if (cmdName == cmd->m_cmdName)
         {
           ASSERT(tokens.size() >= cmd->m_paramCount,
-                 "Not enought command parameters specified!");
+                 "Not enough command parameters specified!");
 
           cmd->feed(tokens);
           return cmd;

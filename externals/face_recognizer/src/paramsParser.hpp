@@ -9,6 +9,7 @@
 struct AppSettings
 {
   bool _isValid = true;
+  const char *executablePath = nullptr;
   uint8_t cameraId = 0;
   uint16_t portSend = 8080;
   uint16_t portReceive = 8081;
