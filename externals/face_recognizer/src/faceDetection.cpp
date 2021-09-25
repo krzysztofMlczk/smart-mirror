@@ -36,8 +36,11 @@ bool FaceDetector::Init()
   m_detectedFrames.reserve(MAX_FRAMES);
 
   // Load classifiers from "haarcascades" directory
-  m_nestedCascade.load("./share/opencv4/haarcascades/haarcascade_eye_tree_eyeglasses.xml");
-  m_cascade.load("./share/opencv4/haarcascades/haarcascade_frontalcatface.xml");
+  ASSERT(m_nestedCascade.load(FileSystem::GetInstance().GetHaarcascadeEyeTreeEyeglassesPath()),
+         "Cascade cannot be found: haarcascade_eye_tree_eyeglasses.xml");
+
+  ASSERT(m_cascade.load(FileSystem::GetInstance().GetHaarcascadeFrontalCatFacePath()),
+         "Cascade cannot be found: haarcascade_frontalcatface.xml");
 
   m_mode->OnInit();
 

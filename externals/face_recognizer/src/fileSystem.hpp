@@ -18,9 +18,14 @@ public:
 
   static FileSystem &GetInstance();
 
+  static std::string RELATIVE_WORKING_PATH;
+
   static const char *FRAMES_WRITE_PATH;
   static const char *FRAMES_BASE_FILENAME;
   static const char *FRAMES_EXTENSION;
+
+  static const char *HAARCASCADE_FRONTALCATFACE_PATH;
+  static const char *HAARCASCADE_EYETREEEYEGLASSES_PATH;
 
   void WriteFrames(const std::vector<FaceFrame> &frames) const;
   std::vector<FaceFrame> LoadFrames() const;
@@ -31,6 +36,11 @@ public:
 
   void SetCurrentUser(const User &user);
   const User &GetCurrentUser() const;
+
+  void SetRelativeWorkingPath(const char *path);
+  const char *GetRelativeWorkingPath() const;
+  std::string GetHaarcascadeEyeTreeEyeglassesPath() const;
+  std::string GetHaarcascadeFrontalCatFacePath() const;
 
 private:
   FileSystem();

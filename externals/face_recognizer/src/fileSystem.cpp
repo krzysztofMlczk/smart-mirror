@@ -11,9 +11,13 @@ using namespace event;
 FileSystem *FileSystem::m_instance = nullptr;
 User FileSystem::m_currentUser;
 
-const char *FileSystem::FRAMES_WRITE_PATH = "./facedata";
+std::string FileSystem::RELATIVE_WORKING_PATH = "./";
+const char *FileSystem::FRAMES_WRITE_PATH = "../facedata";
 const char *FileSystem::FRAMES_BASE_FILENAME = "frameData_";
 const char *FileSystem::FRAMES_EXTENSION = ".fr";
+
+const char *FileSystem::HAARCASCADE_FRONTALCATFACE_PATH = "../share/opencv4/haarcascades/haarcascade_frontalcatface.xml";
+const char *FileSystem::HAARCASCADE_EYETREEEYEGLASSES_PATH = "../share/opencv4/haarcascades/haarcascade_eye_tree_eyeglasses.xml";
 
 FileSystem::FileSystem()
 {
@@ -32,7 +36,9 @@ FileSystem &FileSystem::GetInstance()
 
 void FileSystem::CreateUserMapping()
 {
-  std::string dirname = FRAMES_WRITE_PATH;
+  std::string dirname = RELATIVE_WORKING_PATH;
+  dirname += "/";
+  dirname += FRAMES_WRITE_PATH;
 
   if (fs::is_directory(dirname.c_str()))
   {
@@ -71,7 +77,9 @@ void FileSystem::WriteFrames(const std::vector<FaceFrame> &frames) const
 
   size_t index = 0;
 
-  std::string directoryName = FRAMES_WRITE_PATH;
+  std::string directoryName = RELATIVE_WORKING_PATH;
+  directoryName += "/";
+  directoryName += FRAMES_WRITE_PATH;
   directoryName += "/";
   directoryName += user.username;
   fs::create_directories(directoryName.c_str());
@@ -99,7 +107,10 @@ void FileSystem::WriteFrames(const std::vector<FaceFrame> &frames) const
 
 std::vector<FaceFrame> FileSystem::LoadFrames() const
 {
-  std::string dirname = FRAMES_WRITE_PATH;
+  std::string dirname = RELATIVE_WORKING_PATH;
+  dirname += "/";
+  dirname += FRAMES_WRITE_PATH;
+
   std::vector<FaceFrame> frames;
 
   if (fs::is_directory(dirname.c_str()))
@@ -165,4 +176,33 @@ void FileSystem::SetCurrentUser(const User &user)
 const User &FileSystem::GetCurrentUser() const
 {
   return m_currentUser;
+}
+
+void FileSystem::SetRelativeWorkingPath(const char *path)
+{
+  fs::path dirPath(path);
+  RELATIVE_WORKING_PATH = dirPath.parent_path().string();
+}
+
+const char *FileSystem::GetRelativeWorkingPath() const
+{
+  return RELATIVE_WORKING_PATH.c_str();
+}
+
+std::string FileSystem::GetHaarcascadeEyeTreeEyeglassesPath() const
+{
+  std::string path = RELATIVE_WORKING_PATH;
+  path += "/";
+  path += HAARCASCADE_EYETREEEYEGLASSES_PATH;
+
+  return path;
+}
+
+std::string FileSystem::GetHaarcascadeFrontalCatFacePath() const
+{
+  std::string path = RELATIVE_WORKING_PATH;
+  path += "/";
+  path += HAARCASCADE_FRONTALCATFACE_PATH;
+
+  return path;
 }

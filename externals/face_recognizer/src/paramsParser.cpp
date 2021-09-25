@@ -7,6 +7,7 @@
 AppSettings parseParams(size_t argc, const char **argv, bool failSilently)
 {
   AppSettings settings;
+  settings.executablePath = argv[0];
 
   size_t i = 1;
 

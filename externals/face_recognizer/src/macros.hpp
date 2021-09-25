@@ -68,7 +68,9 @@
 #define DEBUG_PRINT(...) ;
 #endif
 
-#define EXIT_FAIL std::exit(-1);
+#define EXIT_FAIL     \
+  Logger::PrintAll(); \
+  std::exit(-1);
 
 #define ASSERT_FATAL_1_ARG(x) \
   if (!(x))                   \
