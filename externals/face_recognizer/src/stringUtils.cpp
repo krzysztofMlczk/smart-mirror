@@ -10,12 +10,12 @@ namespace utils
 
   bool IsEscaped(const std::string &line, size_t pos)
   {
-    if (pos <= 0 || pos > line.size())
+    if (pos <= 0 || pos >= line.size())
     {
       return false;
     }
 
-    return line[pos - 1] == '\\';
+    return line[pos - 1] == '\\' && !IsEscaped(line, pos - 1);
   }
 
   std::string ReplaceAll(std::string str, const std::string &from, const std::string &to)

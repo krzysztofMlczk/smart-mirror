@@ -16,30 +16,34 @@ using namespace cv;
 
 int main(int argc, const char **argv)
 {
-	AppSettings settings = parseParams(argc, argv);
-	FileSystem::GetInstance().SetCurrentUser(settings.user);
+  AppSettings settings = parseParams(argc, argv);
+  FileSystem::GetInstance().SetCurrentUser(settings.user);
 
-	FaceDetector *module = new FaceDetector(settings.detectorMode, settings.cameraId);
-	EventDispatcher dispatcher(settings.port, module);
+  FaceDetector *module = new FaceDetector(settings.detectorMode, settings.cameraId);
+  EventDispatcher *dispatcher = new EventDispatcher(settings, module);
 
-	module->AddEventObserver(&dispatcher);
-	FileSystem::GetInstance().AddEventObserver(&dispatcher);
-	ImageCropper::GetInstance().AddEventObserver(&dispatcher);
+  module->AddEventObserver(dispatcher);
+  FileSystem::GetInstance().AddEventObserver(dispatcher);
+  ImageCropper::GetInstance().AddEventObserver(dispatcher);
 
-	if (module->Init())
-	{
-		while (module->IsRunning())
-		{
-			module->Update();
-			dispatcher.Dispatch();
-		}
-	}
-	else
-	{
-		LOG_ERROR("Could not run the module!");
-		EXIT_FAIL;
-	}
+  if (module->Init())
+  {
+    while (module->IsRunning())
+    {
+      module->Update();
+      dispatcher->Dispatch();
+      Logger::PrintAll();
+    }
+  }
+  else
+  {
+    LOG_ERROR("Could not run the module!");
+    EXIT_FAIL;
+  }
 
-	LOG_INFO("Application exited");
-	return 0;
+  delete dispatcher;
+  LOG_INFO("Application exited successfully");
+
+  Logger::PrintAll();
+  return 0;
 }

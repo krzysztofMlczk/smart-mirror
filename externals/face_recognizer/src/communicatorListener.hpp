@@ -7,11 +7,12 @@
 class CommunicatorListenerThread : public IThread, public IEventObservable
 {
 public:
-  CommunicatorListenerThread(uint16_t port) : m_port(port){};
+  CommunicatorListenerThread(uint16_t port, uint16_t bufferSize)
+      : BUFFER_SIZE(bufferSize), m_port(port){};
   virtual ~CommunicatorListenerThread();
 
 private:
-  uint16_t BUFFER_SIZE = 255;
+  uint16_t BUFFER_SIZE;
 
   uint16_t m_port;
   int m_socketFD;

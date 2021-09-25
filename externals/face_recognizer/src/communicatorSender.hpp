@@ -13,13 +13,14 @@ using namespace event;
 class CommunicatorSenderThread : public IThread
 {
 public:
-  CommunicatorSenderThread(uint16_t port) : m_port(port){};
+  CommunicatorSenderThread(uint16_t port, uint16_t bufferSize)
+      : BUFFER_SIZE(bufferSize), m_port(port){};
   virtual ~CommunicatorSenderThread();
 
   void sendEvent(IEvent *evt);
 
 private:
-  uint16_t BUFFER_SIZE = 255;
+  uint16_t BUFFER_SIZE;
   const char *LOCALHOST = "127.0.0.1";
 
   uint16_t m_port;

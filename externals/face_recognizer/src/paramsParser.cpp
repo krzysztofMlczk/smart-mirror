@@ -6,78 +6,88 @@
 
 AppSettings parseParams(size_t argc, const char **argv, bool failSilently)
 {
-    AppSettings settings;
+  AppSettings settings;
 
-    size_t i = 1;
+  size_t i = 1;
 
-    while (i < argc)
+  while (i < argc)
+  {
+    if (!setParam(settings, argv, argc, i))
     {
-        if (!setParam(settings, argv, argc, i))
-        {
-            settings._isValid = false;
+      settings._isValid = false;
 
-            if (!failSilently)
-            {
-                EXIT_FAIL;
-            }
-        }
+      if (!failSilently)
+      {
+        EXIT_FAIL;
+      }
     }
+  }
 
-    return settings;
+  return settings;
 }
 
 IParameter *recognizeParam(const char *param)
 {
-    if (strcmp(param, "--cameraId") == 0)
-    {
-        return new ParameterCameraId;
-    }
+  if (strcmp(param, "--cameraId") == 0)
+  {
+    return new ParameterCameraId;
+  }
 
-    if (strcmp(param, "--recognize") == 0)
-    {
-        return new ParameterRecognize;
-    }
+  if (strcmp(param, "--recognize") == 0)
+  {
+    return new ParameterRecognize;
+  }
 
-    if (strcmp(param, "--register") == 0)
-    {
-        return new ParameterRegister;
-    }
+  if (strcmp(param, "--register") == 0)
+  {
+    return new ParameterRegister;
+  }
 
-    if (strcmp(param, "--port") == 0)
-    {
-        return new ParameterPort;
-    }
+  if (strcmp(param, "--portSend") == 0)
+  {
+    return new ParameterPortSend;
+  }
 
-    return nullptr;
+  if (strcmp(param, "--portReceive") == 0)
+  {
+    return new ParameterPortReceive;
+  }
+
+  if (strcmp(param, "--socketBuffer") == 0)
+  {
+    return new ParameterSocketBufferSize;
+  }
+
+  return nullptr;
 }
 
 bool setParam(AppSettings &settings, const char **params, size_t paramsSize, size_t &currentPos)
 {
-    const char *currentWord = params[currentPos++];
-    IParameter *param = recognizeParam(currentWord);
+  const char *currentWord = params[currentPos++];
+  IParameter *param = recognizeParam(currentWord);
 
-    if (!param)
-    {
-        LOG_ERROR("Parameter not recognized: \"%s\" - omitting.", currentWord);
-        return false;
-    }
+  if (!param)
+  {
+    LOG_ERROR("Parameter not recognized: \"%s\" - omitting.", currentWord);
+    return false;
+  }
 
-    if (currentPos + param->GetRequiredValuesCount() > paramsSize)
-    {
-        LOG_ERROR("Incorrect number of values for param: \"%s\" - omitting.", currentWord);
+  if (currentPos + param->GetRequiredValuesCount() > paramsSize)
+  {
+    LOG_ERROR("Incorrect number of values for param: \"%s\" - omitting.", currentWord);
 
-        return false;
-    }
+    return false;
+  }
 
-    size_t valuesStart = currentPos;
-    currentPos += param->GetRequiredValuesCount();
+  size_t valuesStart = currentPos;
+  currentPos += param->GetRequiredValuesCount();
 
-    if (!param->feed(params, valuesStart))
-    {
-        LOG_ERROR("Error while parsing values for: \"%s\"", currentWord);
-        return false;
-    }
+  if (!param->feed(params, valuesStart))
+  {
+    LOG_ERROR("Error while parsing values for: \"%s\"", currentWord);
+    return false;
+  }
 
-    param->setTo(settings);
-    return true;
+  param->setTo(settings);
+  return true;
 }

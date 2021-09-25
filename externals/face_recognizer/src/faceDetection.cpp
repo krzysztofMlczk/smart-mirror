@@ -18,7 +18,7 @@ FaceDetector::FaceDetector(DetectorMode mode, uint8_t cameraIndex)
 
 FaceDetector::~FaceDetector()
 {
-  delete m_mode;
+  Cleanup();
 }
 
 bool FaceDetector::Init()
@@ -81,7 +81,11 @@ void FaceDetector::SwitchMode(DetectorMode mode)
 {
   Cleanup();
   Wakeup();
+
   SetMode(mode);
+  m_mode->OnInit();
+
+  m_capture.open(m_cameraIndex);
 }
 
 void FaceDetector::ToGrayScale(Mat &img)

@@ -5,10 +5,14 @@
 #include <cstring>
 
 #include "macros.hpp"
+#include "fileUtils.hpp"
 
 CommunicatorSenderThread::~CommunicatorSenderThread()
 {
-  close(m_socketFD);
+  if (::utils::IsDescriptorValid(m_socketFD))
+  {
+    close(m_socketFD);
+  }
 }
 
 void CommunicatorSenderThread::sendEvent(IEvent *evt)
@@ -23,6 +27,16 @@ void CommunicatorSenderThread::ThreadFunction()
 {
   ThreadPreStart();
 
+  int newSocket;
+  int addressLength = sizeof(m_address);
+
+  // Wait for the first connection
+  ASSERT((newSocket = accept(m_socketFD, (struct sockaddr *)&m_address,
+                             (socklen_t *)&addressLength)) >= 0,
+         "Sender: Accepting connection failed!");
+
+  LOG_INFO("Sender: Connection accepted");
+
   while (m_running)
   {
     if (!m_commandQueue.empty())
@@ -30,9 +44,12 @@ void CommunicatorSenderThread::ThreadFunction()
       std::string command = m_commandQueue.front();
       m_commandQueue.pop();
 
-      ASSERT(command.size() <= BUFFER_SIZE, "Command buffer size exceeded!")
+      ASSERT(command.size() < BUFFER_SIZE, "Sender: Command buffer size exceeded!")
 
-      send(m_socketFD, command.c_str(), MATH_MIN(BUFFER_SIZE, command.size()), 0);
+      if (send(newSocket, command.c_str(), command.size(), 0) < 0)
+      {
+        LOG_ERROR("Sender: Message could not be sent: %s", command.c_str());
+      }
     }
   }
 
@@ -41,20 +58,10 @@ void CommunicatorSenderThread::ThreadFunction()
 
 void CommunicatorSenderThread::ThreadPreStart()
 {
-  ASSERT((m_socketFD = socket(AF_INET, SOCK_STREAM, 0)) >= 0,
-         "Socket creation error!");
-
-  m_address.sin_family = AF_INET;
-  m_address.sin_port = htons(m_port);
-
-  // Convert IPv4 and IPv6 addresses from text to binary form
-  ASSERT(inet_pton(AF_INET, LOCALHOST, &m_address.sin_addr) > 0,
-         "Invalid or not supported adress!");
-
-  ASSERT(connect(m_socketFD, (struct sockaddr *)&m_address, sizeof(m_address)) >= 0,
-         "Connection failed!");
+  ::utils::StartSocketServer(m_socketFD, m_port, &m_address, "Sender");
 }
 
 void CommunicatorSenderThread::ThreadPreExit()
 {
+  close(m_socketFD);
 }

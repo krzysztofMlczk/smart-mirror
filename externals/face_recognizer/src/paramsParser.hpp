@@ -8,11 +8,13 @@
 
 struct AppSettings
 {
-    bool _isValid = true;
-    uint8_t cameraId = 0;
-    uint16_t port = 8080;
-    DetectorMode detectorMode = DetectorMode::INVALID;
-    User user;
+  bool _isValid = true;
+  uint8_t cameraId = 0;
+  uint16_t portSend = 8080;
+  uint16_t portReceive = 8081;
+  uint16_t socketBufferSize = 255;
+  DetectorMode detectorMode = DetectorMode::INVALID;
+  User user;
 };
 
 AppSettings parseParams(size_t argc, const char **argv, bool failSilently = false);

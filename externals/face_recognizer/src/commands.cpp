@@ -12,7 +12,7 @@ namespace command
     ASSERT(cmdName.size() <= MAX_NAME_LENGTH, "Command name exceeded max length!");
   }
 
-  std::vector<std::string> splitToWords(std::string line)
+  std::vector<std::string> splitToTokens(std::string line)
   {
     std::vector<std::string> words;
     std::string currentWord;
@@ -30,12 +30,17 @@ namespace command
       }
     }
 
+    if (currentWord.size() > 0)
+    {
+      words.push_back(utils::RemoveEscape(currentWord));
+    }
+
     return words;
   }
 
   const ICommand *parseCommand(std::string line)
   {
-    std::vector<std::string> tokens = splitToWords(line);
+    std::vector<std::string> tokens = splitToTokens(line);
 
     if (tokens.size())
     {
@@ -55,6 +60,7 @@ namespace command
       }
     }
 
+    LOG_ERROR("Received unknown command: %s", line.c_str());
     return nullptr;
   }
 } // namespace commands
