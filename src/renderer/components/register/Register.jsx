@@ -7,7 +7,7 @@ import UserNameForm from './UserNameForm';
 import AvatarChooser from './AvatarChooser';
 import CustomStepper from './CustomStepper';
 import GoogleCredentials from './googleCredentials/GoogleCredentials';
-import FaceScanner from './FaceScanner';
+import FaceScanner from './faceScanner/FaceScanner';
 
 function getSteps() {
   return [
@@ -26,7 +26,7 @@ const Register = () => {
   //   avatar: '',
   //   faceScan: '',
   // });
-  const [step, setStep] = useState(4);
+  const [step, setStep] = useState(0);
   const [orientation, setOrientation] = useState(null);
   const [userName, setUserName] = useState('');
   const [avatar, setAvatar] = useState(null);
@@ -80,7 +80,7 @@ const Register = () => {
           />
         );
       case 4:
-        return <FaceScanner />;
+        return <FaceScanner back={back} userName={userName} />;
       default:
         return <UserNameForm next={next} />;
     }
