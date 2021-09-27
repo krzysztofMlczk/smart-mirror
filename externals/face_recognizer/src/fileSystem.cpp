@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 
 #include "macros.hpp"
+#include "cascades.hpp"
 
 namespace fs = std::experimental::filesystem::v1;
 using namespace event;
@@ -16,8 +17,8 @@ const char *FileSystem::FRAMES_WRITE_PATH = "../facedata";
 const char *FileSystem::FRAMES_BASE_FILENAME = "frameData_";
 const char *FileSystem::FRAMES_EXTENSION = ".fr";
 
-const char *FileSystem::HAARCASCADE_FRONTALCATFACE_PATH = "../share/opencv4/haarcascades/haarcascade_frontalcatface.xml";
-const char *FileSystem::HAARCASCADE_EYETREEEYEGLASSES_PATH = "../share/opencv4/haarcascades/haarcascade_eye_tree_eyeglasses.xml";
+const char *FileSystem::HAARCASCADE_FACE_PATH = FaceCascadeChooser(0);
+const char *FileSystem::HAARCASCADE_EYES_PATH = EyeCascadeChooser(0);
 
 FileSystem::FileSystem()
 {
@@ -189,20 +190,20 @@ const char *FileSystem::GetRelativeWorkingPath() const
   return RELATIVE_WORKING_PATH.c_str();
 }
 
-std::string FileSystem::GetHaarcascadeEyeTreeEyeglassesPath() const
+std::string FileSystem::GetHaarcascadeEyesPath() const
 {
   std::string path = RELATIVE_WORKING_PATH;
   path += "/";
-  path += HAARCASCADE_EYETREEEYEGLASSES_PATH;
+  path += HAARCASCADE_EYES_PATH;
 
   return path;
 }
 
-std::string FileSystem::GetHaarcascadeFrontalCatFacePath() const
+std::string FileSystem::GetHaarcascadeFacePath() const
 {
   std::string path = RELATIVE_WORKING_PATH;
   path += "/";
-  path += HAARCASCADE_FRONTALCATFACE_PATH;
+  path += HAARCASCADE_FACE_PATH;
 
   return path;
 }

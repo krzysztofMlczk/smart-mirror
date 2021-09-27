@@ -8,12 +8,14 @@ FaceDetector::FaceDetector(DetectorMode mode)
     : m_cameraIndex(0)
 {
   SetMode(mode);
+  SetupParams();
 }
 
 FaceDetector::FaceDetector(DetectorMode mode, uint8_t cameraIndex)
     : m_cameraIndex(cameraIndex)
 {
   SetMode(mode);
+  SetupParams();
 }
 
 FaceDetector::~FaceDetector()
@@ -36,11 +38,11 @@ bool FaceDetector::Init()
   m_detectedFrames.reserve(MAX_FRAMES);
 
   // Load classifiers from "haarcascades" directory
-  ASSERT(m_nestedCascade.load(FileSystem::GetInstance().GetHaarcascadeEyeTreeEyeglassesPath()),
-         "Cascade cannot be found: haarcascade_eye_tree_eyeglasses.xml");
+  ASSERT(m_cascade.load(FileSystem::GetInstance().GetHaarcascadeFacePath()),
+         "Cascade for face detection cannot be found!");
 
-  ASSERT(m_cascade.load(FileSystem::GetInstance().GetHaarcascadeFrontalCatFacePath()),
-         "Cascade cannot be found: haarcascade_frontalcatface.xml");
+  ASSERT(m_nestedCascade.load(FileSystem::GetInstance().GetHaarcascadeEyesPath()),
+         "Cascade for eyes detection cannot be found!");
 
   m_mode->OnInit();
 
@@ -76,6 +78,7 @@ void FaceDetector::Update()
 
 void FaceDetector::Stop()
 {
+  LOG_INFO("Stopping the module");
   m_mode->OnStop();
   m_isRunning = false;
 }
@@ -109,8 +112,9 @@ bool FaceDetector::ExtractFace(const Mat &img, Mat &extractedFace)
   equalizeHist(extractedFace, extractedFace);
 
   // Detect faces of different sizes using cascade classifier
-  m_cascade.detectMultiScale(extractedFace, faces, 1.1,
-                             2, 0 | CASCADE_SCALE_IMAGE, Size(30, 30));
+  m_cascade.detectMultiScale(extractedFace, faces, m_paramsFace.scaleFactor,
+                             m_paramsFace.minNeighbours, m_paramsFace.flags,
+                             Size(m_paramsFace.minSize, m_paramsFace.minSize));
 
   // Pick up the biggest one from all detected regions,
   // because there's the highest chance that it'll be a face region
@@ -146,8 +150,9 @@ bool FaceDetector::GetEyesPosition(const Mat &&img, std::pair<Point, Point> &eye
 
   // Detection of eyes int the input image
   std::vector<Rect> nestedObjects;
-  m_cascade.detectMultiScale(img, nestedObjects, 1.1, 2,
-                             0 | CASCADE_SCALE_IMAGE, Size(30, 30));
+  m_nestedCascade.detectMultiScale(img, nestedObjects, m_paramsEyes.scaleFactor,
+                                   m_paramsEyes.minNeighbours, m_paramsEyes.flags,
+                                   Size(m_paramsEyes.minSize, m_paramsEyes.minSize));
 
   if (nestedObjects.size() == 2)
   {
@@ -314,6 +319,19 @@ void FaceDetector::SetMode(DetectorMode mode)
     ASSERT(false, "Provided unknown mode for FaceDetector!");
     break;
   }
+}
+
+void FaceDetector::SetupParams()
+{
+  m_paramsFace.scaleFactor = 1.03f;
+  m_paramsFace.minNeighbours = 6;
+  m_paramsFace.flags = 0 | CASCADE_SCALE_IMAGE;
+  m_paramsFace.minSize = 30;
+
+  m_paramsEyes.scaleFactor = 1.05f;
+  m_paramsEyes.minNeighbours = 6;
+  m_paramsEyes.flags = 0 | CASCADE_SCALE_IMAGE;
+  m_paramsEyes.minSize = 30;
 }
 
 void FaceDetector::Cleanup()

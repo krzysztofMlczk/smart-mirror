@@ -24,8 +24,8 @@ public:
   static const char *FRAMES_BASE_FILENAME;
   static const char *FRAMES_EXTENSION;
 
-  static const char *HAARCASCADE_FRONTALCATFACE_PATH;
-  static const char *HAARCASCADE_EYETREEEYEGLASSES_PATH;
+  static const char *HAARCASCADE_FACE_PATH;
+  static const char *HAARCASCADE_EYES_PATH;
 
   void WriteFrames(const std::vector<FaceFrame> &frames) const;
   std::vector<FaceFrame> LoadFrames() const;
@@ -39,8 +39,8 @@ public:
 
   void SetRelativeWorkingPath(const char *path);
   const char *GetRelativeWorkingPath() const;
-  std::string GetHaarcascadeEyeTreeEyeglassesPath() const;
-  std::string GetHaarcascadeFrontalCatFacePath() const;
+  std::string GetHaarcascadeEyesPath() const;
+  std::string GetHaarcascadeFacePath() const;
 
 private:
   FileSystem();

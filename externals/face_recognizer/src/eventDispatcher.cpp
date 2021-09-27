@@ -84,17 +84,14 @@ void EventDispatcher::DispatchEvent(IEvent *evt)
   EVT_CASE_END
 
   EVT_CASE_BEGIN(evtSleep)
-  LOG_INFO("Sending module to sleep");
   m_faceDetector->Sleep();
   EVT_CASE_END
 
   EVT_CASE_BEGIN(evtWakeup)
-  LOG_INFO("Waking up the module");
   m_faceDetector->Wakeup();
   EVT_CASE_END
 
   EVT_CASE_BEGIN(evtStop)
-  LOG_INFO("Stopping the module");
   m_faceDetector->Stop();
   EVT_CASE_END
 
