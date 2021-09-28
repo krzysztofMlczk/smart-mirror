@@ -10,4 +10,6 @@ namespace utils
   bool PollIn(int fd);
 
   void StartSocketServer(int &socketFD, uint16_t port, struct sockaddr_in *address, std::string logPrefix = "");
+
+  std::string GetFileName(const std::string &path);
 } // namespace utils

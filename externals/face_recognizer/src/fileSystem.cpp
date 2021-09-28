@@ -5,6 +5,7 @@
 
 #include "macros.hpp"
 #include "cascades.hpp"
+#include "fileUtils.hpp"
 
 namespace fs = std::experimental::filesystem::v1;
 using namespace event;
@@ -22,7 +23,6 @@ const char *FileSystem::HAARCASCADE_EYES_PATH = EyeCascadeChooser(0);
 
 FileSystem::FileSystem()
 {
-  CreateUserMapping();
 }
 
 FileSystem &FileSystem::GetInstance()
@@ -38,7 +38,11 @@ FileSystem &FileSystem::GetInstance()
 void FileSystem::CreateUserMapping()
 {
   std::string dirname = RELATIVE_WORKING_PATH;
-  dirname += "/";
+  if (dirname.back() != '/' && dirname.back() != '\\')
+  {
+    dirname += "/";
+  }
+
   dirname += FRAMES_WRITE_PATH;
 
   if (fs::is_directory(dirname.c_str()))
@@ -52,13 +56,17 @@ void FileSystem::CreateUserMapping()
       {
         if (fileStat.st_mode & S_IFDIR)
         {
-          std::string name = filePath.parent_path().filename().c_str();
+          std::string name = utils::GetFileName(filePath.string());
           int label = HashString(name);
 
           m_userLabelMap[label] = name;
         }
       }
     }
+  }
+  else
+  {
+    LOG_ERROR("%s was expected to be a directory!", dirname.c_str());
   }
 
   LOG_INFO("Created user mapping. Users found: %ld", m_userLabelMap.size());
@@ -79,7 +87,11 @@ void FileSystem::WriteFrames(const std::vector<FaceFrame> &frames) const
   size_t index = 0;
 
   std::string directoryName = RELATIVE_WORKING_PATH;
-  directoryName += "/";
+  if (directoryName.back() != '/' && directoryName.back() != '\\')
+  {
+    directoryName += "/";
+  }
+
   directoryName += FRAMES_WRITE_PATH;
   directoryName += "/";
   directoryName += user.username;
@@ -109,7 +121,11 @@ void FileSystem::WriteFrames(const std::vector<FaceFrame> &frames) const
 std::vector<FaceFrame> FileSystem::LoadFrames() const
 {
   std::string dirname = RELATIVE_WORKING_PATH;
-  dirname += "/";
+  if (dirname.back() != '/' && dirname.back() != '\\')
+  {
+    dirname += "/";
+  }
+
   dirname += FRAMES_WRITE_PATH;
 
   std::vector<FaceFrame> frames;
@@ -193,7 +209,11 @@ const char *FileSystem::GetRelativeWorkingPath() const
 std::string FileSystem::GetHaarcascadeEyesPath() const
 {
   std::string path = RELATIVE_WORKING_PATH;
-  path += "/";
+  if (path.back() != '/' && path.back() != '\\')
+  {
+    path += "/";
+  }
+
   path += HAARCASCADE_EYES_PATH;
 
   return path;
@@ -202,7 +222,11 @@ std::string FileSystem::GetHaarcascadeEyesPath() const
 std::string FileSystem::GetHaarcascadeFacePath() const
 {
   std::string path = RELATIVE_WORKING_PATH;
-  path += "/";
+  if (path.back() != '/' && path.back() != '\\')
+  {
+    path += "/";
+  }
+
   path += HAARCASCADE_FACE_PATH;
 
   return path;

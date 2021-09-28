@@ -42,13 +42,13 @@ public:
   std::string GetHaarcascadeEyesPath() const;
   std::string GetHaarcascadeFacePath() const;
 
+  void CreateUserMapping();
+
 private:
   FileSystem();
 
   static FileSystem *m_instance;
   static User m_currentUser;
-
-  void CreateUserMapping();
 
   std::map<int, std::string> m_userLabelMap;
 };

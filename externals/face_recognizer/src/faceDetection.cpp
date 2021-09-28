@@ -192,7 +192,7 @@ void FaceDetector::Train()
   std::vector<Mat> images = ExtrudeImages(frames);
   std::vector<int> labels = ExtrudeLabels(frames);
 
-  LOG_INFO("Face dataset was loaded");
+  LOG_INFO("Face dataset was loaded (%ld frames)", images.size());
 
   if (images.size() == 0)
   {
@@ -217,7 +217,10 @@ bool FaceDetector::Recognize(const Mat &&image, int &predictedLabel, double &con
 
   if (confidence >= PREDICTION_TRESHOLD)
   {
-    LOG_INFO("Prediction: %d, Confidence: %lf", predictedLabel, confidence);
+    User user = FileSystem::GetInstance().GetUserByHash(predictedLabel);
+    LOG_INFO("Prediction: %s, (Label: %d), Confidence: %lf", user.username.c_str(),
+             predictedLabel, confidence);
+
     return true;
   }
 
