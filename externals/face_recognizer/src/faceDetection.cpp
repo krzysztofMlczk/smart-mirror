@@ -2,6 +2,8 @@
 #include "imageCropper.hpp"
 #include "macros.hpp"
 
+#include <tuple>
+
 using namespace event;
 
 FaceDetector::FaceDetector(DetectorMode mode)
@@ -67,10 +69,11 @@ void FaceDetector::Update()
   if (!frame.empty())
   {
     Mat face;
+    Vec2i faceOffset;
 
-    if (ExtractFace(frame, face))
+    if (ExtractFace(frame, face, faceOffset))
     {
-      std::pair<Mat *, Mat *> _data(&frame, &face);
+      std::tuple<Mat *, Mat *, Vec2i> _data(&frame, &face, faceOffset);
       m_mode->OnUpdate((void *)&_data);
     }
   }
@@ -100,7 +103,7 @@ void FaceDetector::ToGrayScale(Mat &img)
   cvtColor(img, img, COLOR_BGR2GRAY);
 }
 
-bool FaceDetector::ExtractFace(const Mat &img, Mat &extractedFace)
+bool FaceDetector::ExtractFace(const Mat &img, Mat &extractedFace, Vec2i &extractionOffset)
 {
   std::vector<Rect> faces;
   extractedFace = img;
@@ -138,6 +141,7 @@ bool FaceDetector::ExtractFace(const Mat &img, Mat &extractedFace)
       return false;
 
     extractedFace = extractedFace(face);
+    extractionOffset = Vec2i(face.x, face.y);
     return true;
   }
 
@@ -171,6 +175,11 @@ bool FaceDetector::GetEyesPosition(const Mat &&img, std::pair<Point, Point> &eye
   }
 
   return false;
+}
+
+bool FaceDetector::ApplyCropping(Mat &img, std::pair<Point, Point> &eyesPosition)
+{
+  return !ImageCropper::GetInstance().CropImage(img, FRAME_SIZE, eyesPosition);
 }
 
 bool FaceDetector::PushFrame(const FaceFrame &frame)
@@ -240,11 +249,6 @@ bool FaceDetector::Register(const Mat &&image, const std::pair<Point, Point> &ey
   FaceFrame frame;
   frame.frameImage = image;
   frame.metadata = meta;
-
-  if (!ImageCropper::GetInstance().CropImage(frame, FRAME_SIZE))
-  {
-    return false;
-  }
 
   return PushFrame(std::move(frame));
 }

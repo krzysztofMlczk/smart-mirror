@@ -3,6 +3,8 @@
 #include "faceDetection.hpp"
 #include "events.hpp"
 
+#include <tuple>
+
 using namespace event;
 
 bool FaceDetectionModeRegister::OnInit(void *data)
@@ -13,19 +15,30 @@ bool FaceDetectionModeRegister::OnInit(void *data)
 
 void FaceDetectionModeRegister::OnUpdate(void *data)
 {
-  std::pair<Mat *, Mat *> *_data = static_cast<std::pair<Mat *, Mat *> *>(data);
-  Mat &frame = *_data->first;
-  Mat &face = *_data->second;
+  std::tuple<Mat *, Mat *, Vec2i> *_data = static_cast<std::tuple<Mat *, Mat *, Vec2i> *>(data);
+  Mat &frame = *std::get<0>(*_data);
+  Mat &face = *std::get<1>(*_data);
+  Vec2i offset = std::get<2>(*_data);
 
   std::pair<Point, Point> eyesPosition;
 
   if (m_instance->GetEyesPosition(std::move(face), eyesPosition))
   {
-    m_instance->Register(std::move(frame), eyesPosition);
-    LOG_INFO("Detected eyes at (x=%d, y=%d), (x=%d, y=%d)", eyesPosition.first.x, eyesPosition.first.y, eyesPosition.second.x, eyesPosition.second.y);
+    eyesPosition.first = Point(eyesPosition.first.x + offset[0], eyesPosition.first.y + offset[1]);
+    eyesPosition.second = Point(eyesPosition.second.x + offset[0], eyesPosition.second.y + offset[1]);
 
-    IEvent *event = new EventProgressReport(m_instance->m_detectedFrames.size(), m_instance->MAX_FRAMES);
-    m_instance->NotifyObserversAbout(event);
+    if (!m_instance->ApplyCropping(frame, eyesPosition))
+    {
+      m_instance->Register(std::move(frame), eyesPosition);
+      LOG_INFO("Detected eyes at (x=%d, y=%d), (x=%d, y=%d)", eyesPosition.first.x, eyesPosition.first.y, eyesPosition.second.x, eyesPosition.second.y);
+
+      IEvent *event = new EventProgressReport(m_instance->m_detectedFrames.size(), m_instance->MAX_FRAMES);
+      m_instance->NotifyObserversAbout(event);
+    }
+    else
+    {
+      LOG_ERROR("Image cropping failed, ignoring the frame.");
+    }
   }
 
   // Check if already collected enough frames
@@ -57,8 +70,8 @@ bool FaceDetectionModeRecognize::OnInit(void *data)
 
 void FaceDetectionModeRecognize::OnUpdate(void *data)
 {
-  std::pair<Mat *, Mat *> *_data = static_cast<std::pair<Mat *, Mat *> *>(data);
-  Mat &face = *_data->second;
+  std::tuple<Mat *, Mat *, Vec2i> *_data = static_cast<std::tuple<Mat *, Mat *, Vec2i> *>(data);
+  Mat &face = *std::get<0>(*_data);
 
   int label;
   double confidence;

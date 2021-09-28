@@ -44,7 +44,7 @@ public:
 private:
   IFaceDetectionMode *m_mode;
 
-  const size_t MAX_FRAMES = 10;
+  const size_t MAX_FRAMES = 25;
   const size_t FRAME_SIZE = 128;
   double PREDICTION_TRESHOLD = 100.0;
 
@@ -62,8 +62,9 @@ private:
   std::vector<FaceFrame> m_detectedFrames;
 
   void ToGrayScale(Mat &img);
-  bool ExtractFace(const Mat &img, Mat &extractedFace);
+  bool ExtractFace(const Mat &img, Mat &extractedFace, Vec2i &extractionOffset);
   bool GetEyesPosition(const Mat &&img, std::pair<Point, Point> &eyesPosition);
+  bool ApplyCropping(Mat &img, std::pair<Point, Point> &eyesPosition);
 
   void Train();
   bool Recognize(const Mat &&image, int &label, double &confidence);
