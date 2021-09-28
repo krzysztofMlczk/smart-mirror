@@ -75,8 +75,22 @@ bool ImageCropper::CropImage(Mat &image, uint32_t destImageSize, std::pair<Point
   // do the cropping
   image = image(cropRegion);
 
+  // update eyes position
+  Vec2i cropOffset(cropRegion.x, cropRegion.y);
+  eyeLeft -= cropOffset;
+  eyeRight -= cropOffset;
+
   // resize the image
+  Vec2d scaleVector((double)destSize[0] / image.size().width,
+                    (double)destSize[1] / image.size().height);
+
   resize(image, image, Size(destSize[0], destSize[1]), INTER_LINEAR);
+
+  // update eyes position
+  eyeLeft[0] *= scaleVector[0];
+  eyeLeft[1] *= scaleVector[1];
+  eyeRight[0] *= scaleVector[0];
+  eyeRight[1] *= scaleVector[1];
 
   eyesPosition.first = Point(eyeLeft[0], eyeLeft[1]);
   eyesPosition.second = Point(eyeRight[0], eyeRight[1]);
