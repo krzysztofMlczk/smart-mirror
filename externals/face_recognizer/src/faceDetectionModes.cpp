@@ -71,16 +71,33 @@ bool FaceDetectionModeRecognize::OnInit(void *data)
 void FaceDetectionModeRecognize::OnUpdate(void *data)
 {
   std::tuple<Mat *, Mat *, Vec2i> *_data = static_cast<std::tuple<Mat *, Mat *, Vec2i> *>(data);
-  Mat &face = *std::get<0>(*_data);
+  Mat &frame = *std::get<0>(*_data);
+  Mat &face = *std::get<1>(*_data);
+  Vec2i offset = std::get<2>(*_data);
 
-  int label;
-  double confidence;
+  std::pair<Point, Point> eyesPosition;
 
-  if (m_instance->Recognize(std::move(face), label, confidence))
+  if (m_instance->GetEyesPosition(std::move(face), eyesPosition))
   {
-    User user = FileSystem::GetInstance().GetUserByHash(label);
-    IEvent *event = new EventFaceRecognized(user.username, confidence);
-    m_instance->NotifyObserversAbout(event);
+    eyesPosition.first = Point(eyesPosition.first.x + offset[0], eyesPosition.first.y + offset[1]);
+    eyesPosition.second = Point(eyesPosition.second.x + offset[0], eyesPosition.second.y + offset[1]);
+
+    if (!m_instance->ApplyCropping(frame, eyesPosition))
+    {
+      int label;
+      double confidence;
+
+      if (m_instance->Recognize(std::move(frame), label, confidence))
+      {
+        User user = FileSystem::GetInstance().GetUserByHash(label);
+        IEvent *event = new EventFaceRecognized(user.username, confidence);
+        m_instance->NotifyObserversAbout(event);
+      }
+    }
+    else
+    {
+      LOG_ERROR("Image cropping failed, ignoring the frame.");
+    }
   }
 }
 

@@ -44,9 +44,9 @@ public:
 private:
   IFaceDetectionMode *m_mode;
 
-  const size_t MAX_FRAMES = 25;
+  const size_t MAX_FRAMES = 100;
   const size_t FRAME_SIZE = 128;
-  double PREDICTION_TRESHOLD = 100.0;
+  double PREDICTION_TRESHOLD = 0.0;
 
   VideoCapture m_capture;
   CascadeClassifier m_cascade, m_nestedCascade;
