@@ -148,6 +148,26 @@ bool FaceDetector::ExtractFace(const Mat &img, Mat &extractedFace, Vec2i &extrac
   return false;
 }
 
+bool FaceDetector::PreprocessFrame(Mat &frame, std::pair<Point, Point> &eyesPosition, Vec2i extracedFaceOffset, Mat &&extractedFace)
+{
+  if (GetEyesPosition(std::move(extractedFace), eyesPosition))
+  {
+    eyesPosition.first = Point(eyesPosition.first.x + extracedFaceOffset[0], eyesPosition.first.y + extracedFaceOffset[1]);
+    eyesPosition.second = Point(eyesPosition.second.x + extracedFaceOffset[0], eyesPosition.second.y + extracedFaceOffset[1]);
+
+    if (ApplyCropping(frame, eyesPosition))
+    {
+      return true;
+    }
+    else
+    {
+      LOG_ERROR("Processing frame failed: cropping image failed!");
+    }
+  }
+
+  return false;
+}
+
 bool FaceDetector::GetEyesPosition(const Mat &&img, std::pair<Point, Point> &eyesPosition)
 {
   Rect face(0, 0, img.size().width, img.size().height);
@@ -179,7 +199,7 @@ bool FaceDetector::GetEyesPosition(const Mat &&img, std::pair<Point, Point> &eye
 
 bool FaceDetector::ApplyCropping(Mat &img, std::pair<Point, Point> &eyesPosition)
 {
-  return !ImageCropper::GetInstance().CropImage(img, FRAME_SIZE, eyesPosition);
+  return ImageCropper::GetInstance().CropImage(img, FRAME_SIZE, eyesPosition);
 }
 
 bool FaceDetector::PushFrame(const FaceFrame &frame)
@@ -218,15 +238,15 @@ void FaceDetector::Train()
   m_model->train(images, labels);
 }
 
-bool FaceDetector::Recognize(const Mat &&image, int &predictedLabel, double &confidence)
+bool FaceDetector::Recognize(const Mat &&image, User &user)
 {
-  predictedLabel = -1;
-  confidence = 0.0;
+  int predictedLabel = -1;
+  double confidence = 0.0;
   m_model->predict(image, predictedLabel, confidence);
 
-  if (confidence >= PREDICTION_TRESHOLD)
+  if (predictedLabel != -1 && confidence <= PREDICTION_TRESHOLD)
   {
-    User user = FileSystem::GetInstance().GetUserByHash(predictedLabel);
+    user = FileSystem::GetInstance().GetUserByHash(predictedLabel);
     LOG_INFO("Prediction: %s, (Label: %d), Confidence: %lf", user.username.c_str(),
              predictedLabel, confidence);
 

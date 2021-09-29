@@ -83,19 +83,17 @@ namespace event
   public:
     EVENT_NAME(evtFaceRecognized)
 
-    EventFaceRecognized(const std::string &predictedUser, float certainty)
-        : m_predictedUser(predictedUser), m_certainty(certainty) {}
+    EventFaceRecognized(const std::string &predictedUser)
+        : m_predictedUser(predictedUser) {}
 
     virtual ~EventFaceRecognized() = default;
 
     std::string PrepareCommand() const override
     {
-      return std::string("recognized ") + Escape(m_predictedUser) + std::string(" ") +
-             std::to_string(m_certainty);
+      return std::string("recognized ") + Escape(m_predictedUser);
     }
 
     std::string m_predictedUser;
-    float m_certainty;
   };
 
   class EventUserRegistered : public IEvent

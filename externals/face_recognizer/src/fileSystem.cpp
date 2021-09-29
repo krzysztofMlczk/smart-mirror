@@ -19,7 +19,7 @@ const char *FileSystem::FRAMES_BASE_FILENAME = "frameData_";
 const char *FileSystem::FRAMES_EXTENSION = ".fr";
 
 const char *FileSystem::HAARCASCADE_FACE_PATH = FaceCascadeChooser(0);
-const char *FileSystem::HAARCASCADE_EYES_PATH = EyeCascadeChooser(0);
+const char *FileSystem::HAARCASCADE_EYES_PATH = EyeCascadeChooser(1);
 
 FileSystem::FileSystem()
 {

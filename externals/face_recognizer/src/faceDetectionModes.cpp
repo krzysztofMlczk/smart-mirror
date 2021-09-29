@@ -22,23 +22,17 @@ void FaceDetectionModeRegister::OnUpdate(void *data)
 
   std::pair<Point, Point> eyesPosition;
 
-  if (m_instance->GetEyesPosition(std::move(face), eyesPosition))
+  if (m_instance->PreprocessFrame(frame, eyesPosition, offset, std::move(face)))
   {
-    eyesPosition.first = Point(eyesPosition.first.x + offset[0], eyesPosition.first.y + offset[1]);
-    eyesPosition.second = Point(eyesPosition.second.x + offset[0], eyesPosition.second.y + offset[1]);
+    m_instance->Register(std::move(frame), eyesPosition);
 
-    if (!m_instance->ApplyCropping(frame, eyesPosition))
-    {
-      m_instance->Register(std::move(frame), eyesPosition);
-      LOG_INFO("Detected eyes at (x=%d, y=%d), (x=%d, y=%d)", eyesPosition.first.x, eyesPosition.first.y, eyesPosition.second.x, eyesPosition.second.y);
+    LOG_INFO("Frame %ld/%ld : Detected eyes at (x=%d, y=%d), (x=%d, y=%d)",
+             m_instance->m_detectedFrames.size(), m_instance->MAX_FRAMES,
+             eyesPosition.first.x, eyesPosition.first.y,
+             eyesPosition.second.x, eyesPosition.second.y);
 
-      IEvent *event = new EventProgressReport(m_instance->m_detectedFrames.size(), m_instance->MAX_FRAMES);
-      m_instance->NotifyObserversAbout(event);
-    }
-    else
-    {
-      LOG_ERROR("Image cropping failed, ignoring the frame.");
-    }
+    IEvent *event = new EventProgressReport(m_instance->m_detectedFrames.size(), m_instance->MAX_FRAMES);
+    m_instance->NotifyObserversAbout(event);
   }
 
   // Check if already collected enough frames
@@ -77,26 +71,14 @@ void FaceDetectionModeRecognize::OnUpdate(void *data)
 
   std::pair<Point, Point> eyesPosition;
 
-  if (m_instance->GetEyesPosition(std::move(face), eyesPosition))
+  if (m_instance->PreprocessFrame(frame, eyesPosition, offset, std::move(face)))
   {
-    eyesPosition.first = Point(eyesPosition.first.x + offset[0], eyesPosition.first.y + offset[1]);
-    eyesPosition.second = Point(eyesPosition.second.x + offset[0], eyesPosition.second.y + offset[1]);
+    User user;
 
-    if (!m_instance->ApplyCropping(frame, eyesPosition))
+    if (m_instance->Recognize(std::move(frame), user))
     {
-      int label;
-      double confidence;
-
-      if (m_instance->Recognize(std::move(frame), label, confidence))
-      {
-        User user = FileSystem::GetInstance().GetUserByHash(label);
-        IEvent *event = new EventFaceRecognized(user.username, confidence);
-        m_instance->NotifyObserversAbout(event);
-      }
-    }
-    else
-    {
-      LOG_ERROR("Image cropping failed, ignoring the frame.");
+      IEvent *event = new EventFaceRecognized(user.username);
+      m_instance->NotifyObserversAbout(event);
     }
   }
 }

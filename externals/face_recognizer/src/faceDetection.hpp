@@ -46,7 +46,7 @@ private:
 
   const size_t MAX_FRAMES = 100;
   const size_t FRAME_SIZE = 128;
-  double PREDICTION_TRESHOLD = 0.0;
+  double PREDICTION_TRESHOLD = 60.0;
 
   VideoCapture m_capture;
   CascadeClassifier m_cascade, m_nestedCascade;
@@ -63,11 +63,12 @@ private:
 
   void ToGrayScale(Mat &img);
   bool ExtractFace(const Mat &img, Mat &extractedFace, Vec2i &extractionOffset);
+  bool PreprocessFrame(Mat &frame, std::pair<Point, Point> &eyesPosition, Vec2i extracedFaceOffset, Mat &&extractedFace);
   bool GetEyesPosition(const Mat &&img, std::pair<Point, Point> &eyesPosition);
   bool ApplyCropping(Mat &img, std::pair<Point, Point> &eyesPosition);
 
   void Train();
-  bool Recognize(const Mat &&image, int &label, double &confidence);
+  bool Recognize(const Mat &&image, User &user);
   bool Register(const Mat &&image, const std::pair<Point, Point> &eyesPosition);
 
   bool PushFrame(const FaceFrame &frame);
