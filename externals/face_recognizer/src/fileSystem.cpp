@@ -4,6 +4,8 @@
 #include <sys/stat.h>
 
 #include "macros.hpp"
+#include "cascades.hpp"
+#include "fileUtils.hpp"
 
 namespace fs = std::experimental::filesystem::v1;
 using namespace event;
@@ -16,12 +18,11 @@ const char *FileSystem::FRAMES_WRITE_PATH = "../facedata";
 const char *FileSystem::FRAMES_BASE_FILENAME = "frameData_";
 const char *FileSystem::FRAMES_EXTENSION = ".fr";
 
-const char *FileSystem::HAARCASCADE_FRONTALCATFACE_PATH = "../share/opencv4/haarcascades/haarcascade_frontalcatface.xml";
-const char *FileSystem::HAARCASCADE_EYETREEEYEGLASSES_PATH = "../share/opencv4/haarcascades/haarcascade_eye_tree_eyeglasses.xml";
+const char *FileSystem::HAARCASCADE_FACE_PATH = FaceCascadeChooser(0);
+const char *FileSystem::HAARCASCADE_EYES_PATH = EyeCascadeChooser(1);
 
 FileSystem::FileSystem()
 {
-  CreateUserMapping();
 }
 
 FileSystem &FileSystem::GetInstance()
@@ -37,7 +38,11 @@ FileSystem &FileSystem::GetInstance()
 void FileSystem::CreateUserMapping()
 {
   std::string dirname = RELATIVE_WORKING_PATH;
-  dirname += "/";
+  if (dirname.back() != '/' && dirname.back() != '\\')
+  {
+    dirname += "/";
+  }
+
   dirname += FRAMES_WRITE_PATH;
 
   if (fs::is_directory(dirname.c_str()))
@@ -51,13 +56,17 @@ void FileSystem::CreateUserMapping()
       {
         if (fileStat.st_mode & S_IFDIR)
         {
-          std::string name = filePath.parent_path().filename().c_str();
+          std::string name = utils::GetFileName(filePath.string());
           int label = HashString(name);
 
           m_userLabelMap[label] = name;
         }
       }
     }
+  }
+  else
+  {
+    LOG_ERROR("%s was expected to be a directory!", dirname.c_str());
   }
 
   LOG_INFO("Created user mapping. Users found: %ld", m_userLabelMap.size());
@@ -78,7 +87,11 @@ void FileSystem::WriteFrames(const std::vector<FaceFrame> &frames) const
   size_t index = 0;
 
   std::string directoryName = RELATIVE_WORKING_PATH;
-  directoryName += "/";
+  if (directoryName.back() != '/' && directoryName.back() != '\\')
+  {
+    directoryName += "/";
+  }
+
   directoryName += FRAMES_WRITE_PATH;
   directoryName += "/";
   directoryName += user.username;
@@ -108,7 +121,11 @@ void FileSystem::WriteFrames(const std::vector<FaceFrame> &frames) const
 std::vector<FaceFrame> FileSystem::LoadFrames() const
 {
   std::string dirname = RELATIVE_WORKING_PATH;
-  dirname += "/";
+  if (dirname.back() != '/' && dirname.back() != '\\')
+  {
+    dirname += "/";
+  }
+
   dirname += FRAMES_WRITE_PATH;
 
   std::vector<FaceFrame> frames;
@@ -189,20 +206,28 @@ const char *FileSystem::GetRelativeWorkingPath() const
   return RELATIVE_WORKING_PATH.c_str();
 }
 
-std::string FileSystem::GetHaarcascadeEyeTreeEyeglassesPath() const
+std::string FileSystem::GetHaarcascadeEyesPath() const
 {
   std::string path = RELATIVE_WORKING_PATH;
-  path += "/";
-  path += HAARCASCADE_EYETREEEYEGLASSES_PATH;
+  if (path.back() != '/' && path.back() != '\\')
+  {
+    path += "/";
+  }
+
+  path += HAARCASCADE_EYES_PATH;
 
   return path;
 }
 
-std::string FileSystem::GetHaarcascadeFrontalCatFacePath() const
+std::string FileSystem::GetHaarcascadeFacePath() const
 {
   std::string path = RELATIVE_WORKING_PATH;
-  path += "/";
-  path += HAARCASCADE_FRONTALCATFACE_PATH;
+  if (path.back() != '/' && path.back() != '\\')
+  {
+    path += "/";
+  }
+
+  path += HAARCASCADE_FACE_PATH;
 
   return path;
 }

@@ -67,4 +67,18 @@ namespace utils
 
     LOG_INFO(std::string(logPrefix + ": thread set up successfully, using port: %d").c_str(), port);
   }
+
+  std::string GetFileName(const std::string &path)
+  {
+    size_t lastDelimiter;
+    lastDelimiter = path.find_last_of("/\\");
+
+    if (lastDelimiter == std::string::npos)
+    {
+      LOG_ERROR("GetFileName() failed: delimiter not found!");
+      return "";
+    }
+
+    return path.substr(lastDelimiter + 1);
+  }
 } // namespace utils

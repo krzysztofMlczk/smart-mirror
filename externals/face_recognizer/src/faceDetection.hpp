@@ -19,53 +19,68 @@
 
 using namespace cv;
 
+struct DetectionParams
+{
+  float scaleFactor;
+  uint8_t minNeighbours;
+  int flags;
+  uint16_t minSize;
+};
+
 class FaceDetector final : public IModule
 {
 public:
-    FaceDetector(DetectorMode mode);
-    FaceDetector(DetectorMode mode, uint8_t cameraIndex);
+  FaceDetector(DetectorMode mode);
+  FaceDetector(DetectorMode mode, uint8_t cameraIndex);
 
-    virtual ~FaceDetector();
+  virtual ~FaceDetector();
 
-    virtual bool Init() override;
-    virtual void Update() override;
-    virtual void Stop() override;
+  virtual bool Init() override;
+  virtual void Update() override;
+  virtual void Stop() override;
 
-    void SwitchMode(DetectorMode mode);
+  void SwitchMode(DetectorMode mode);
 
 private:
-    IFaceDetectionMode *m_mode;
+  IFaceDetectionMode *m_mode;
 
-    const size_t MAX_FRAMES = 10;
-    const size_t FRAME_SIZE = 128;
-    double PREDICTION_TRESHOLD = 100.0;
+  const size_t MAX_FRAMES = 100;
+  const size_t FRAME_SIZE = 128;
+  double PREDICTION_TRESHOLD = 60.0;
 
-    VideoCapture m_capture;
-    CascadeClassifier m_cascade, m_nestedCascade;
-    Ptr<face::FaceRecognizer> m_model;
+  VideoCapture m_capture;
+  CascadeClassifier m_cascade, m_nestedCascade;
+  Ptr<face::FaceRecognizer> m_model;
 
-    const uint8_t m_cameraIndex;
-    float m_scale = 1.0f;
+  const uint8_t m_cameraIndex;
 
-    std::vector<FaceFrame> m_detectedFrames;
+  // Face detection params
+  float m_scale = 1.0f;
+  DetectionParams m_paramsFace;
+  DetectionParams m_paramsEyes;
 
-    void ToGrayScale(Mat &img);
-    bool ExtractFace(const Mat &img, Mat &extractedFace);
-    bool GetEyesPosition(const Mat &&img, std::pair<Point, Point> &eyesPosition);
+  std::vector<FaceFrame> m_detectedFrames;
 
-    void Train();
-    bool Recognize(const Mat &&image, int &label, double &confidence);
-    bool Register(const Mat &&image, const std::pair<Point, Point> &eyesPosition);
+  void ToGrayScale(Mat &img);
+  bool ExtractFace(const Mat &img, Mat &extractedFace, Vec2i &extractionOffset);
+  bool PreprocessFrame(Mat &frame, std::pair<Point, Point> &eyesPosition, Vec2i extracedFaceOffset, Mat &&extractedFace);
+  bool GetEyesPosition(const Mat &&img, std::pair<Point, Point> &eyesPosition);
+  bool ApplyCropping(Mat &img, std::pair<Point, Point> &eyesPosition);
 
-    bool PushFrame(const FaceFrame &frame);
-    static void CleanUpFrames(std::vector<FaceFrame> &frames);
+  void Train();
+  bool Recognize(const Mat &&image, User &user);
+  bool Register(const Mat &&image, const std::pair<Point, Point> &eyesPosition);
 
-    void SetMode(DetectorMode mode);
-    void Cleanup();
+  bool PushFrame(const FaceFrame &frame);
+  static void CleanUpFrames(std::vector<FaceFrame> &frames);
 
-    std::vector<Mat> ExtrudeImages(const std::vector<FaceFrame> &frames);
-    std::vector<int> ExtrudeLabels(const std::vector<FaceFrame> &frames);
+  void SetMode(DetectorMode mode);
+  void SetupParams();
+  void Cleanup();
 
-    friend class FaceDetectionModeRecognize;
-    friend class FaceDetectionModeRegister;
+  std::vector<Mat> ExtrudeImages(const std::vector<FaceFrame> &frames);
+  std::vector<int> ExtrudeLabels(const std::vector<FaceFrame> &frames);
+
+  friend class FaceDetectionModeRecognize;
+  friend class FaceDetectionModeRegister;
 };

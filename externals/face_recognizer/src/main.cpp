@@ -19,6 +19,7 @@ int main(int argc, const char **argv)
   AppSettings settings = parseParams(argc, argv);
   FileSystem::GetInstance().SetCurrentUser(settings.user);
   FileSystem::GetInstance().SetRelativeWorkingPath(settings.executablePath);
+  FileSystem::GetInstance().CreateUserMapping();
 
   FaceDetector *module = new FaceDetector(settings.detectorMode, settings.cameraId);
   EventDispatcher *dispatcher = new EventDispatcher(settings, module);

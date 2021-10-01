@@ -2,18 +2,22 @@
 #include "imageCropper.hpp"
 #include "macros.hpp"
 
+#include <tuple>
+
 using namespace event;
 
 FaceDetector::FaceDetector(DetectorMode mode)
     : m_cameraIndex(0)
 {
   SetMode(mode);
+  SetupParams();
 }
 
 FaceDetector::FaceDetector(DetectorMode mode, uint8_t cameraIndex)
     : m_cameraIndex(cameraIndex)
 {
   SetMode(mode);
+  SetupParams();
 }
 
 FaceDetector::~FaceDetector()
@@ -36,11 +40,11 @@ bool FaceDetector::Init()
   m_detectedFrames.reserve(MAX_FRAMES);
 
   // Load classifiers from "haarcascades" directory
-  ASSERT(m_nestedCascade.load(FileSystem::GetInstance().GetHaarcascadeEyeTreeEyeglassesPath()),
-         "Cascade cannot be found: haarcascade_eye_tree_eyeglasses.xml");
+  ASSERT(m_cascade.load(FileSystem::GetInstance().GetHaarcascadeFacePath()),
+         "Cascade for face detection cannot be found!");
 
-  ASSERT(m_cascade.load(FileSystem::GetInstance().GetHaarcascadeFrontalCatFacePath()),
-         "Cascade cannot be found: haarcascade_frontalcatface.xml");
+  ASSERT(m_nestedCascade.load(FileSystem::GetInstance().GetHaarcascadeEyesPath()),
+         "Cascade for eyes detection cannot be found!");
 
   m_mode->OnInit();
 
@@ -65,10 +69,11 @@ void FaceDetector::Update()
   if (!frame.empty())
   {
     Mat face;
+    Vec2i faceOffset;
 
-    if (ExtractFace(frame, face))
+    if (ExtractFace(frame, face, faceOffset))
     {
-      std::pair<Mat *, Mat *> _data(&frame, &face);
+      std::tuple<Mat *, Mat *, Vec2i> _data(&frame, &face, faceOffset);
       m_mode->OnUpdate((void *)&_data);
     }
   }
@@ -76,6 +81,7 @@ void FaceDetector::Update()
 
 void FaceDetector::Stop()
 {
+  LOG_INFO("Stopping the module");
   m_mode->OnStop();
   m_isRunning = false;
 }
@@ -97,7 +103,7 @@ void FaceDetector::ToGrayScale(Mat &img)
   cvtColor(img, img, COLOR_BGR2GRAY);
 }
 
-bool FaceDetector::ExtractFace(const Mat &img, Mat &extractedFace)
+bool FaceDetector::ExtractFace(const Mat &img, Mat &extractedFace, Vec2i &extractionOffset)
 {
   std::vector<Rect> faces;
   extractedFace = img;
@@ -109,8 +115,9 @@ bool FaceDetector::ExtractFace(const Mat &img, Mat &extractedFace)
   equalizeHist(extractedFace, extractedFace);
 
   // Detect faces of different sizes using cascade classifier
-  m_cascade.detectMultiScale(extractedFace, faces, 1.1,
-                             2, 0 | CASCADE_SCALE_IMAGE, Size(30, 30));
+  m_cascade.detectMultiScale(extractedFace, faces, m_paramsFace.scaleFactor,
+                             m_paramsFace.minNeighbours, m_paramsFace.flags,
+                             Size(m_paramsFace.minSize, m_paramsFace.minSize));
 
   // Pick up the biggest one from all detected regions,
   // because there's the highest chance that it'll be a face region
@@ -134,7 +141,28 @@ bool FaceDetector::ExtractFace(const Mat &img, Mat &extractedFace)
       return false;
 
     extractedFace = extractedFace(face);
+    extractionOffset = Vec2i(face.x, face.y);
     return true;
+  }
+
+  return false;
+}
+
+bool FaceDetector::PreprocessFrame(Mat &frame, std::pair<Point, Point> &eyesPosition, Vec2i extracedFaceOffset, Mat &&extractedFace)
+{
+  if (GetEyesPosition(std::move(extractedFace), eyesPosition))
+  {
+    eyesPosition.first = Point(eyesPosition.first.x + extracedFaceOffset[0], eyesPosition.first.y + extracedFaceOffset[1]);
+    eyesPosition.second = Point(eyesPosition.second.x + extracedFaceOffset[0], eyesPosition.second.y + extracedFaceOffset[1]);
+
+    if (ApplyCropping(frame, eyesPosition))
+    {
+      return true;
+    }
+    else
+    {
+      LOG_ERROR("Processing frame failed: cropping image failed!");
+    }
   }
 
   return false;
@@ -146,8 +174,9 @@ bool FaceDetector::GetEyesPosition(const Mat &&img, std::pair<Point, Point> &eye
 
   // Detection of eyes int the input image
   std::vector<Rect> nestedObjects;
-  m_cascade.detectMultiScale(img, nestedObjects, 1.1, 2,
-                             0 | CASCADE_SCALE_IMAGE, Size(30, 30));
+  m_nestedCascade.detectMultiScale(img, nestedObjects, m_paramsEyes.scaleFactor,
+                                   m_paramsEyes.minNeighbours, m_paramsEyes.flags,
+                                   Size(m_paramsEyes.minSize, m_paramsEyes.minSize));
 
   if (nestedObjects.size() == 2)
   {
@@ -166,6 +195,11 @@ bool FaceDetector::GetEyesPosition(const Mat &&img, std::pair<Point, Point> &eye
   }
 
   return false;
+}
+
+bool FaceDetector::ApplyCropping(Mat &img, std::pair<Point, Point> &eyesPosition)
+{
+  return ImageCropper::GetInstance().CropImage(img, FRAME_SIZE, eyesPosition);
 }
 
 bool FaceDetector::PushFrame(const FaceFrame &frame)
@@ -187,7 +221,7 @@ void FaceDetector::Train()
   std::vector<Mat> images = ExtrudeImages(frames);
   std::vector<int> labels = ExtrudeLabels(frames);
 
-  LOG_INFO("Face dataset was loaded");
+  LOG_INFO("Face dataset was loaded (%ld frames)", images.size());
 
   if (images.size() == 0)
   {
@@ -204,15 +238,18 @@ void FaceDetector::Train()
   m_model->train(images, labels);
 }
 
-bool FaceDetector::Recognize(const Mat &&image, int &predictedLabel, double &confidence)
+bool FaceDetector::Recognize(const Mat &&image, User &user)
 {
-  predictedLabel = -1;
-  confidence = 0.0;
+  int predictedLabel = -1;
+  double confidence = 0.0;
   m_model->predict(image, predictedLabel, confidence);
 
-  if (confidence >= PREDICTION_TRESHOLD)
+  if (predictedLabel != -1 && confidence <= PREDICTION_TRESHOLD)
   {
-    LOG_INFO("Prediction: %d, Confidence: %lf", predictedLabel, confidence);
+    user = FileSystem::GetInstance().GetUserByHash(predictedLabel);
+    LOG_INFO("Prediction: %s, (Label: %d), Confidence: %lf", user.username.c_str(),
+             predictedLabel, confidence);
+
     return true;
   }
 
@@ -232,11 +269,6 @@ bool FaceDetector::Register(const Mat &&image, const std::pair<Point, Point> &ey
   FaceFrame frame;
   frame.frameImage = image;
   frame.metadata = meta;
-
-  if (!ImageCropper::GetInstance().CropImage(frame, FRAME_SIZE))
-  {
-    return false;
-  }
 
   return PushFrame(std::move(frame));
 }
@@ -314,6 +346,19 @@ void FaceDetector::SetMode(DetectorMode mode)
     ASSERT(false, "Provided unknown mode for FaceDetector!");
     break;
   }
+}
+
+void FaceDetector::SetupParams()
+{
+  m_paramsFace.scaleFactor = 1.03f;
+  m_paramsFace.minNeighbours = 6;
+  m_paramsFace.flags = 0 | CASCADE_SCALE_IMAGE;
+  m_paramsFace.minSize = 30;
+
+  m_paramsEyes.scaleFactor = 1.05f;
+  m_paramsEyes.minNeighbours = 6;
+  m_paramsEyes.flags = 0 | CASCADE_SCALE_IMAGE;
+  m_paramsEyes.minSize = 30;
 }
 
 void FaceDetector::Cleanup()

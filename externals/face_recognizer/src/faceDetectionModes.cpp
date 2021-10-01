@@ -3,6 +3,8 @@
 #include "faceDetection.hpp"
 #include "events.hpp"
 
+#include <tuple>
+
 using namespace event;
 
 bool FaceDetectionModeRegister::OnInit(void *data)
@@ -13,16 +15,21 @@ bool FaceDetectionModeRegister::OnInit(void *data)
 
 void FaceDetectionModeRegister::OnUpdate(void *data)
 {
-  std::pair<Mat *, Mat *> *_data = static_cast<std::pair<Mat *, Mat *> *>(data);
-  Mat &frame = *_data->first;
-  Mat &face = *_data->second;
+  std::tuple<Mat *, Mat *, Vec2i> *_data = static_cast<std::tuple<Mat *, Mat *, Vec2i> *>(data);
+  Mat &frame = *std::get<0>(*_data);
+  Mat &face = *std::get<1>(*_data);
+  Vec2i offset = std::get<2>(*_data);
 
   std::pair<Point, Point> eyesPosition;
 
-  if (m_instance->GetEyesPosition(std::move(face), eyesPosition))
+  if (m_instance->PreprocessFrame(frame, eyesPosition, offset, std::move(face)))
   {
     m_instance->Register(std::move(frame), eyesPosition);
-    LOG_INFO("Detected eyes at (x=%d, y=%d), (x=%d, y=%d)", eyesPosition.first.x, eyesPosition.first.y, eyesPosition.second.x, eyesPosition.second.y);
+
+    LOG_INFO("Frame %ld/%ld : Detected eyes at (x=%d, y=%d), (x=%d, y=%d)",
+             m_instance->m_detectedFrames.size(), m_instance->MAX_FRAMES,
+             eyesPosition.first.x, eyesPosition.first.y,
+             eyesPosition.second.x, eyesPosition.second.y);
 
     IEvent *event = new EventProgressReport(m_instance->m_detectedFrames.size(), m_instance->MAX_FRAMES);
     m_instance->NotifyObserversAbout(event);
@@ -57,17 +64,22 @@ bool FaceDetectionModeRecognize::OnInit(void *data)
 
 void FaceDetectionModeRecognize::OnUpdate(void *data)
 {
-  std::pair<Mat *, Mat *> *_data = static_cast<std::pair<Mat *, Mat *> *>(data);
-  Mat &face = *_data->second;
+  std::tuple<Mat *, Mat *, Vec2i> *_data = static_cast<std::tuple<Mat *, Mat *, Vec2i> *>(data);
+  Mat &frame = *std::get<0>(*_data);
+  Mat &face = *std::get<1>(*_data);
+  Vec2i offset = std::get<2>(*_data);
 
-  int label;
-  double confidence;
+  std::pair<Point, Point> eyesPosition;
 
-  if (m_instance->Recognize(std::move(face), label, confidence))
+  if (m_instance->PreprocessFrame(frame, eyesPosition, offset, std::move(face)))
   {
-    User user = FileSystem::GetInstance().GetUserByHash(label);
-    IEvent *event = new EventFaceRecognized(user.username, confidence);
-    m_instance->NotifyObserversAbout(event);
+    User user;
+
+    if (m_instance->Recognize(std::move(frame), user))
+    {
+      IEvent *event = new EventFaceRecognized(user.username);
+      m_instance->NotifyObserversAbout(event);
+    }
   }
 }
 
