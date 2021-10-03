@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import InfoScreen from './InfoScreen';
 import ScannerScreen from './ScannerScreen';
 
-const FaceScanner = ({ back, userName }) => {
+const FaceScanner = ({ back, userName, setSuccess }) => {
   const [scanning, setScanning] = useState(false);
 
   const onStart = () => {
@@ -14,7 +14,7 @@ const FaceScanner = ({ back, userName }) => {
   return (
     <>
       {scanning ? (
-        <ScannerScreen />
+        <ScannerScreen userName={userName} setSuccess={setSuccess} />
       ) : (
         <InfoScreen back={back} onStart={onStart} />
       )}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 
+import RegisterSuccessfulScreen from './RegisterSuccessfulScreen';
 import ScreenOrientationChooser from './ScreenOrientationChooser';
 import UserNameForm from './UserNameForm';
 import AvatarChooser from './AvatarChooser';
@@ -31,6 +32,7 @@ const Register = () => {
   const [userName, setUserName] = useState('');
   const [avatar, setAvatar] = useState(null);
   const [user, setUser] = useState(null);
+  const [registerSuccessful, setRegisterSuccessful] = useState(false);
   const steps = getSteps();
 
   const next = () => {
@@ -80,25 +82,37 @@ const Register = () => {
           />
         );
       case 4:
-        return <FaceScanner back={back} userName={userName} />;
+        return (
+          <FaceScanner
+            back={back}
+            userName={userName}
+            setSuccess={setRegisterSuccessful}
+          />
+        );
       default:
         return <UserNameForm next={next} />;
     }
   };
 
   return (
-    <Grid
-      container
-      direction="column"
-      justifyContent="space-between"
-      style={{ height: '90vh', margin: '5vh 0' }}
-    >
-      <Typography align="center" variant="h2">
-        {steps[step].title}
-      </Typography>
-      {getCurrentStepContent(step)}
-      <CustomStepper activeStepIndex={step} steps={steps} />
-    </Grid>
+    <>
+      {registerSuccessful ? (
+        <RegisterSuccessfulScreen userName={userName} />
+      ) : (
+        <Grid
+          container
+          direction="column"
+          justifyContent="space-between"
+          style={{ height: '90vh', margin: '5vh 0' }}
+        >
+          <Typography align="center" variant="h2">
+            {steps[step].title}
+          </Typography>
+          {getCurrentStepContent(step)}
+          <CustomStepper activeStepIndex={step} steps={steps} />
+        </Grid>
+      )}
+    </>
   );
 };
 

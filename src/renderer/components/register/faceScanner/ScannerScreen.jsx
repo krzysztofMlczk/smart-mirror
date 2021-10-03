@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -102,10 +102,27 @@ const useStyles = makeStyles({
   },
 });
 
-const ScannerScreen = () => {
+const ScannerScreen = ({ userName, setSuccess }) => {
   const [webcamReady, setWebcamReady] = useState(false);
+  const [progress, setProgress] = useState(0);
   const overlayRef = useRef(null);
   const classes = useStyles();
+
+  const onSuccess = useCallback(() => {
+    setSuccess(true);
+  }, [setSuccess]);
+
+  useEffect(() => {
+    window.middleware.faceRecognition.setSuccessCallback(onSuccess);
+  }, [onSuccess]);
+
+  useEffect(() => {
+    window.middleware.faceRecognition.setProgressCallback(setProgress);
+  }, [setProgress]);
+
+  useEffect(() => {
+    window.middleware.faceRecognition.register(userName);
+  }, [userName]);
 
   return (
     <>
@@ -128,7 +145,7 @@ const ScannerScreen = () => {
               <CircularProgress
                 variant="determinate"
                 color="secondary"
-                value={50}
+                value={progress}
                 thickness={0.6}
                 // needs the same size as overlay circle!
                 size={`${overlayRef?.current?.clientWidth}px`}
