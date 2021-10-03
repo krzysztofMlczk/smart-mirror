@@ -43,6 +43,9 @@ void FaceDetectionModeRegister::OnUpdate(void *data)
     IEvent *evt = new EventUserRegistered(FileSystem::GetInstance().GetCurrentUser().username);
     m_instance->NotifyObserversAbout(evt);
 
+    // Add mappings for new user
+    FileSystem::GetInstance().AddUserMapping(FileSystem::GetInstance().GetCurrentUser().username);
+
     // After completing thee registration, put the module to sleep
     m_instance->Sleep();
   }

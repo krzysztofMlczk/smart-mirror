@@ -14,7 +14,7 @@ struct AppSettings
   uint16_t portSend = 8080;
   uint16_t portReceive = 8081;
   uint16_t socketBufferSize = 255;
-  DetectorMode detectorMode = DetectorMode::INVALID;
+  DetectorMode detectorMode = DetectorMode::RECOGNITION;
   User user;
 };
 

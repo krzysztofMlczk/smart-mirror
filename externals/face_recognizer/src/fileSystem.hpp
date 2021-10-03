@@ -43,6 +43,7 @@ public:
   std::string GetHaarcascadeFacePath() const;
 
   void CreateUserMapping();
+  void AddUserMapping(std::string name);
 
 private:
   FileSystem();

@@ -57,9 +57,7 @@ void FileSystem::CreateUserMapping()
         if (fileStat.st_mode & S_IFDIR)
         {
           std::string name = utils::GetFileName(filePath.string());
-          int label = HashString(name);
-
-          m_userLabelMap[label] = name;
+          AddUserMapping(name);
         }
       }
     }
@@ -70,6 +68,12 @@ void FileSystem::CreateUserMapping()
   }
 
   LOG_INFO("Created user mapping. Users found: %ld", m_userLabelMap.size());
+}
+
+void FileSystem::AddUserMapping(std::string name)
+{
+  int label = HashString(name);
+  m_userLabelMap[label] = name;
 }
 
 void FileSystem::WriteFrames(const std::vector<FaceFrame> &frames) const

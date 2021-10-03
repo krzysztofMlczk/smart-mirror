@@ -339,7 +339,7 @@ void FaceDetector::SetMode(DetectorMode mode)
     break;
 
   case DetectorMode::INVALID:
-    ASSERT(false, "Provided invalid mode for FaceDetector or the mode was not specified at all!");
+    ASSERT(false, "Provided invalid mode for FaceDetector!");
     break;
 
   default:
