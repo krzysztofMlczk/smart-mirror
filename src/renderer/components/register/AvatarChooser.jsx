@@ -3,9 +3,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import ImageList from '@material-ui/core/ImageList';
 import ImageListItem from '@material-ui/core/ImageListItem';
 import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
 
-import BackNextBtn from '../buttons/BackNextBtn';
+import BackNextBtnsRow from '../buttons/BackNextBtnsRow';
 
 const getImageData = () => [
   {
@@ -110,24 +109,12 @@ const AvatarChooser = ({ next, back, avatar, saveAvatar }) => {
           </ImageListItem>
         ))}
       </ImageList>
-      <Grid
-        container
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        style={{ marginTop: '40px' }}
-      >
-        <BackNextBtn variant="back" onClick={onBack}>
-          Back
-        </BackNextBtn>
-        <BackNextBtn
-          variant="next"
-          disabled={!currentlySelected}
-          onClick={onNext}
-        >
-          Next
-        </BackNextBtn>
-      </Grid>
+      <BackNextBtnsRow
+        marginTop="40px"
+        onBack={onBack}
+        isNextDisabled={!currentlySelected}
+        onNext={onNext}
+      />
     </Container>
   );
 };

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import AccountCircleOutlinedIcon from '@material-ui/icons/AccountCircleOutlined';
 
-import BackNextBtn from '../../buttons/BackNextBtn';
+import BackNextBtnsRow from '../../buttons/BackNextBtnsRow';
 import GoogleAccountRow from './GoogleAccountRow';
 
 const GoogleCredentials = ({ next, back, user, saveUser }) => {
@@ -48,24 +47,12 @@ const GoogleCredentials = ({ next, back, user, saveUser }) => {
           >
             Choose another account
           </Button>
-          <Grid
-            container
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-            style={{ marginTop: '24px' }}
-          >
-            <BackNextBtn variant="back" onClick={onBack}>
-              Back
-            </BackNextBtn>
-            <BackNextBtn
-              variant="next"
-              disabled={!currentUser}
-              onClick={onNext}
-            >
-              Next
-            </BackNextBtn>
-          </Grid>
+          <BackNextBtnsRow
+            marginTop="24px"
+            onBack={onBack}
+            isNextDisabled={!currentUser}
+            onNext={onNext}
+          />
         </Container>
       )}
     </>
