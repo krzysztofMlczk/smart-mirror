@@ -1,63 +1,64 @@
-/* THIS FILE SETs UP faceRecognition OBJECT WHICH WILL BE EXPOSED via middleware
-to the renderer process to communicate with the C++ face_recognizer */
 const net = require('net');
+const commands = require('./commands');
 const tokenize = require('./tokenizer');
 
-let registeringProgressCallback;
-let registeringSuccessCallback;
+class FaceRecognition {
+  constructor() {
+    this.registeringProgressCallback = undefined;
+    this.registeringSuccessCallback = undefined;
 
-const sender = net.createConnection({ port: 8081 }, () => {
-  // 'connect' listener.
-  console.log('sender connected');
-});
+    this.sender = net.createConnection({ port: 8081 }, () => {
+      // 'connect' listener.
+      /* eslint-disable no-console */
+      console.info('sender connected');
+    });
 
-const receiver = net.createConnection(
-  {
-    port: 8080,
-    onread: {
-      buffer: Buffer.alloc(255),
-      callback: (nread, data) => {
-        const msg = tokenize(data);
+    this.receiver = net.createConnection(
+      {
+        port: 8080,
+        onread: {
+          buffer: Buffer.alloc(255),
+          callback: (nread, data) => {
+            const msg = tokenize(data);
 
-        switch (msg.command) {
-          case 'progress':
-            registeringProgressCallback(msg.value);
-            break;
-          case 'registered':
-            registeringSuccessCallback();
-            break;
-          case 'error':
-            // fire error callback (TODO)
-            break;
-          case 'fatal':
-            // fire error callback (TODO)
-            break;
-          default:
-            break;
-        }
+            switch (msg.command) {
+              case commands.PROGRESS:
+                this.registeringProgressCallback(msg.value);
+                break;
+              case commands.REGISTERED:
+                this.registeringSuccessCallback();
+                break;
+              case commands.ERROR:
+                // TODO: fire error callback
+                break;
+              case commands.FATAL:
+                // TODO: fire error callback
+                break;
+              default:
+                break;
+            }
+          },
+        },
       },
-    },
-  },
-  () => {
-    // connect listener
-    console.log('revceiver connected');
+      () => {
+        // connect listener
+        /* eslint-disable no-console */
+        console.info('revceiver connected');
+      }
+    );
   }
-);
 
-const register = (userName) => {
-  sender.write(`register ${userName}`);
-};
+  setProgressCallback = (progressCallback) => {
+    this.registeringProgressCallback = progressCallback;
+  };
 
-const setProgressCallback = (progressCallback) => {
-  registeringProgressCallback = progressCallback;
-};
+  setSuccessCallback = (successCallback) => {
+    this.registeringSuccessCallback = successCallback;
+  };
 
-const setSuccessCallback = (successCallback) => {
-  registeringSuccessCallback = successCallback;
-};
+  register = (userName) => {
+    this.sender.write(commands.REGISTER(userName));
+  };
+}
 
-module.exports = {
-  register,
-  setProgressCallback,
-  setSuccessCallback,
-};
+module.exports = new FaceRecognition();
