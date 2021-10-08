@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 
-import RegisterSuccessfulScreen from './RegisterSuccessfulScreen';
+import RegisterSuccessfulScreen from './registerSuccessScreen/RegisterSuccessfulScreen';
 import ScreenOrientationChooser from './ScreenOrientationChooser';
 import UserNameForm from './UserNameForm';
 import AvatarChooser from './AvatarChooser';
@@ -97,7 +97,7 @@ const Register = () => {
   return (
     <>
       {registerSuccessful ? (
-        <RegisterSuccessfulScreen userName={userName} />
+        <RegisterSuccessfulScreen />
       ) : (
         <Grid
           container
