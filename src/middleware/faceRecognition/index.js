@@ -1,13 +1,29 @@
 const net = require('net');
 const commands = require('./commands');
 const tokenize = require('./tokenizer');
+const launchFaceRecognizer = require('./launcher/launcher');
 
 class FaceRecognition {
   constructor() {
     this.registeringProgressCallback = undefined;
     this.registeringSuccessCallback = undefined;
 
-    this.sender = net.createConnection({ port: 8081 }, () => {
+    launchFaceRecognizer()
+      .then((ports) => {
+        setTimeout(() => {
+          this.setupConnection(ports);
+        }, 1000);
+        return ports;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  setupConnection = (ports) => {
+    const [portSender, portReceiver] = ports;
+
+    this.sender = net.createConnection({ port: portSender }, () => {
       // 'connect' listener.
       /* eslint-disable no-console */
       console.info('sender connected');
@@ -15,7 +31,7 @@ class FaceRecognition {
 
     this.receiver = net.createConnection(
       {
-        port: 8080,
+        port: portReceiver,
         onread: {
           buffer: Buffer.alloc(255),
           callback: (nread, data) => {
@@ -46,7 +62,7 @@ class FaceRecognition {
         console.info('revceiver connected');
       }
     );
-  }
+  };
 
   setProgressCallback = (progressCallback) => {
     this.registeringProgressCallback = progressCallback;

@@ -7,9 +7,19 @@
 # ./launcher.sh [sender port] [receiver port] [camera id]
 #
 
-source ./findPort.sh
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+PATH_TO_RECOGNIZER="${SCRIPTPATH}/../face_recognizer/output/face-recognizer"
 
-PATH_TO_RECOGNIZER="../face_recognizer/output/face-recognizer"
+function findPort {
+	read LOWERPORT UPPERPORT < /proc/sys/net/ipv4/ip_local_port_range
+	while :
+	do
+		PORT="`shuf -i $LOWERPORT-$UPPERPORT -n 1`"
+		ss -lpn | grep -q ":$PORT " || break
+	done
+
+	echo "${PORT}"
+}
 
 if [ -z "${3}" ]
 then
