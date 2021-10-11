@@ -10,10 +10,11 @@ class FaceRecognition {
 
     launchFaceRecognizer()
       .then((ports) => {
-        setTimeout(() => {
-          this.setupConnection(ports);
-        }, 1000);
-        return ports;
+        return this.setupConnection(ports);
+      })
+      /* eslint-disable promise/always-return */
+      .then((msg) => {
+        console.log(msg);
       })
       .catch((error) => {
         console.log(error);
@@ -23,45 +24,46 @@ class FaceRecognition {
   setupConnection = (ports) => {
     const [portSender, portReceiver] = ports;
 
-    this.sender = net.createConnection({ port: portSender }, () => {
-      // 'connect' listener.
-      /* eslint-disable no-console */
-      console.info('sender connected');
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        try {
+          this.sender = net.createConnection({ port: portSender });
+
+          this.receiver = net.createConnection({
+            port: portReceiver,
+            onread: {
+              buffer: Buffer.alloc(255),
+              callback: (nread, data) => {
+                const msg = tokenize(data);
+
+                switch (msg.command) {
+                  case commands.PROGRESS:
+                    this.registeringProgressCallback(msg.value);
+                    break;
+                  case commands.REGISTERED:
+                    this.registeringSuccessCallback();
+                    break;
+                  case commands.ERROR:
+                    // TODO: fire error callback
+                    break;
+                  case commands.FATAL:
+                    // TODO: fire error callback
+                    break;
+                  default:
+                    break;
+                }
+              },
+            },
+          });
+        } catch (error) {
+          reject(error);
+        }
+
+        resolve(
+          `Connection to face recognizer module set up succesfully.\nRunning on ports: ${portSender}, ${portReceiver}`
+        );
+      }, 1000);
     });
-
-    this.receiver = net.createConnection(
-      {
-        port: portReceiver,
-        onread: {
-          buffer: Buffer.alloc(255),
-          callback: (nread, data) => {
-            const msg = tokenize(data);
-
-            switch (msg.command) {
-              case commands.PROGRESS:
-                this.registeringProgressCallback(msg.value);
-                break;
-              case commands.REGISTERED:
-                this.registeringSuccessCallback();
-                break;
-              case commands.ERROR:
-                // TODO: fire error callback
-                break;
-              case commands.FATAL:
-                // TODO: fire error callback
-                break;
-              default:
-                break;
-            }
-          },
-        },
-      },
-      () => {
-        // connect listener
-        /* eslint-disable no-console */
-        console.info('revceiver connected');
-      }
-    );
   };
 
   setProgressCallback = (progressCallback) => {
