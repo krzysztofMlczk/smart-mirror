@@ -2,11 +2,13 @@
 const db = require('./database/index');
 const faceRecognition = require('./faceRecognition/index');
 const google = require('./google/index');
+const screenOrientation = require('./screenOrientation/index');
 
 module.exports = {
   db,
   faceRecognition,
   google,
+  screenOrientation,
 };
 
 // middleware API encapsulates functions providing access to many resources like:

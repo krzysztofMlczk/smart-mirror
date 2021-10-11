@@ -34,6 +34,15 @@ const ScreenOrientationChooser = ({ next, orientation, saveOrientation }) => {
   const h = 'horizontal';
   const v = 'vertical';
 
+  const onSelect = (newOrientation) => {
+    if (newOrientation !== selectedOrientation) {
+      window.middleware.screenOrientation.changeScreenOrientation(
+        newOrientation
+      );
+      setSelectedOrientation(newOrientation);
+    }
+  };
+
   const onNext = () => {
     saveOrientation(selectedOrientation);
     next();
@@ -50,7 +59,7 @@ const ScreenOrientationChooser = ({ next, orientation, saveOrientation }) => {
           justifyContent="flex-end"
           spacing={2}
           xs={6}
-          onClick={() => setSelectedOrientation(h)}
+          onClick={() => onSelect(h)}
           className={
             selectedOrientation === h ? classes.selected : classes.notSelected
           }
@@ -70,7 +79,7 @@ const ScreenOrientationChooser = ({ next, orientation, saveOrientation }) => {
           justifyContent="flex-end"
           spacing={2}
           xs={6}
-          onClick={() => setSelectedOrientation('vertical')}
+          onClick={() => onSelect(v)}
           className={
             selectedOrientation === v ? classes.selected : classes.notSelected
           }
