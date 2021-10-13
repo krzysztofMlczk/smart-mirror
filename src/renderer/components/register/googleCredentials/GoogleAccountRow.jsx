@@ -33,22 +33,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const GoogleAccountRow = ({ user }) => {
+const GoogleAccountRow = ({ userData }) => {
   const classes = useStyles();
   return (
     <>
       <Grid container className={classes.frame}>
         <Grid item xs={3}>
           <img
-            src={user.pictureUrl} // TODO: add color inversion when black image!
+            src={userData.picture}
             alt="Not available"
             className={classes.googleAvatar}
           />
         </Grid>
         <Grid item xs={7} className={classes.text}>
-          <Typography variant="h5">{user.displayName}</Typography>
+          <Typography variant="h5">{userData.name}</Typography>
           <Typography variant="body1" className={classes.email}>
-            {user.email}
+            {userData.email}
           </Typography>
         </Grid>
         <Grid container item justifyContent="center" xs={2}>

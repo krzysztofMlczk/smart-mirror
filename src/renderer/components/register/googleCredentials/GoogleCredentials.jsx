@@ -6,37 +6,37 @@ import AccountCircleOutlinedIcon from '@material-ui/icons/AccountCircleOutlined'
 import BackNextBtnsRow from '../../buttons/BackNextBtnsRow';
 import GoogleAccountRow from './GoogleAccountRow';
 
-const GoogleCredentials = ({ next, back, user, saveUser }) => {
-  const [currentUser, setCurrentUser] = useState(user);
+const GoogleCredentials = ({ next, back, googleData, saveGoogleData }) => {
+  const [currentGoogleData, setCurrentGoogleData] = useState(googleData);
 
   const beginAuthorization = () => {
     window.middleware.google
       .signIn()
-      .then((authorizedUser) => setCurrentUser(authorizedUser))
+      .then((resultData) => setCurrentGoogleData(resultData))
       .catch((err) => console.error(err));
   };
 
   useEffect(() => {
-    if (!currentUser) {
+    if (!currentGoogleData) {
       beginAuthorization();
     }
-  }, [currentUser]);
+  }, [currentGoogleData]);
 
   const onNext = () => {
-    saveUser(currentUser);
+    saveGoogleData(currentGoogleData);
     next();
   };
 
   const onBack = () => {
-    saveUser(currentUser);
+    saveGoogleData(currentGoogleData);
     back();
   };
 
   return (
     <>
-      {currentUser && (
+      {currentGoogleData && (
         <Container maxWidth="xs">
-          <GoogleAccountRow user={currentUser} />
+          <GoogleAccountRow userData={currentGoogleData.userData} />
           <Button
             variant="outlined"
             color="secondary"
@@ -50,7 +50,7 @@ const GoogleCredentials = ({ next, back, user, saveUser }) => {
           <BackNextBtnsRow
             marginTop="24px"
             onBack={onBack}
-            isNextDisabled={!currentUser}
+            isNextDisabled={!currentGoogleData}
             onNext={onNext}
           />
         </Container>

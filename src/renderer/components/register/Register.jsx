@@ -31,7 +31,7 @@ const Register = () => {
   const [orientation, setOrientation] = useState(null);
   const [userName, setUserName] = useState('');
   const [avatar, setAvatar] = useState(null);
-  const [user, setUser] = useState(null);
+  const [googleData, setGoogleData] = useState(null);
   const [registerSuccessful, setRegisterSuccessful] = useState(false);
   const steps = getSteps();
 
@@ -77,8 +77,8 @@ const Register = () => {
           <GoogleCredentials
             next={next}
             back={back}
-            user={user}
-            saveUser={setUser}
+            googleData={googleData}
+            saveGoogleData={setGoogleData}
           />
         );
       case 4:
@@ -97,7 +97,7 @@ const Register = () => {
   return (
     <>
       {registerSuccessful ? (
-        <RegisterSuccessfulScreen />
+        <RegisterSuccessfulScreen userData={{ userName, avatar, googleData }} />
       ) : (
         <Grid
           container

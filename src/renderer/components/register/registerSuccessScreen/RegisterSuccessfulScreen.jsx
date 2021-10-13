@@ -6,8 +6,12 @@ import Typography from '@material-ui/core/Typography';
 
 import CheckmarkAnimated from './CheckmarkAnimated';
 
-const RegisterSuccessfulScreen = () => {
+const RegisterSuccessfulScreen = ({ userData }) => {
   const history = useHistory();
+
+  useEffect(() => {
+    window.middleware.db.users.createUser(userData);
+  }, [userData]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
