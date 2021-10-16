@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
@@ -7,10 +7,18 @@ import BackNextBtn from '../buttons/BackNextBtn';
 
 const UserNameForm = ({ next, userName, saveUserName }) => {
   const [username, setUsername] = useState(userName);
+  const [taken, setTaken] = useState(null);
   const [error, setError] = useState(' ');
 
   const userNameEmpty = username === '';
   const errorOccured = error !== ' ';
+
+  useEffect(() => {
+    window.middleware.db.users
+      .readAllUserNames()
+      .then((userNames) => setTaken(userNames))
+      .catch((err) => console.log(err));
+  }, [setTaken]);
 
   const validate = (value) => {
     // returns false if validation fails
@@ -27,6 +35,16 @@ const UserNameForm = ({ next, userName, saveUserName }) => {
     return false;
   };
 
+  const isTaken = (value) => {
+    const isUserNameTaken = taken.includes(value);
+    if (isUserNameTaken) {
+      setError('This username is already taken');
+    } else {
+      setError(' ');
+    }
+    return isUserNameTaken;
+  };
+
   const handleChange = (e) => {
     // get rid of additional whitespaces
     // (thanks to this user actually cannot enter whitespaces in username field)
@@ -39,7 +57,7 @@ const UserNameForm = ({ next, userName, saveUserName }) => {
   };
 
   const onNext = () => {
-    if (validate(username)) {
+    if (validate(username) && !isTaken(username)) {
       saveUserName(username);
       next();
     }
