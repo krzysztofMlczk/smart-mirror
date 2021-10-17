@@ -4,11 +4,20 @@ import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 
 import BackNextBtn from '../buttons/BackNextBtn';
+import BackNextBtnsRow from '../buttons/BackNextBtnsRow';
 
-const UserNameForm = ({ next, userName, saveUserName }) => {
+const UserNameForm = ({
+  next,
+  back,
+  userName,
+  saveUserName,
+  savedError,
+  saveError,
+  isBackAvailable,
+}) => {
   const [username, setUsername] = useState(userName);
   const [taken, setTaken] = useState(null);
-  const [error, setError] = useState(' ');
+  const [error, setError] = useState(savedError);
 
   const userNameEmpty = username === '';
   const errorOccured = error !== ' ';
@@ -59,8 +68,15 @@ const UserNameForm = ({ next, userName, saveUserName }) => {
   const onNext = () => {
     if (validate(username) && !isTaken(username)) {
       saveUserName(username);
+      saveError(' '); // reset error message
       next();
     }
+  };
+
+  const onBack = () => {
+    saveUserName(username);
+    saveError(error);
+    back();
   };
 
   return (
@@ -75,15 +91,24 @@ const UserNameForm = ({ next, userName, saveUserName }) => {
         value={username}
         onChange={handleChange}
       />
-      <Box textAlign="center" mt={5}>
-        <BackNextBtn
-          variant="next"
-          disabled={userNameEmpty || errorOccured}
-          onClick={onNext}
-        >
-          Next
-        </BackNextBtn>
-      </Box>
+      {isBackAvailable ? (
+        <BackNextBtnsRow
+          marginTop="40px"
+          onBack={onBack}
+          isNextDisabled={userNameEmpty || errorOccured}
+          onNext={onNext}
+        />
+      ) : (
+        <Box textAlign="center" mt={5}>
+          <BackNextBtn
+            variant="next"
+            disabled={userNameEmpty || errorOccured}
+            onClick={onNext}
+          >
+            Next
+          </BackNextBtn>
+        </Box>
+      )}
     </Container>
   );
 };

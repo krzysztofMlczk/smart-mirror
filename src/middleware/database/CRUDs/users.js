@@ -18,7 +18,21 @@ const createUser = async (userData) => {
 /* READ */
 /**
  *
- * @returns Promise resolving to array of userNames
+ * @returns Promise resolving to an array of users
+ */
+const readAllUsers = async () => {
+  let allUsers;
+  try {
+    allUsers = await users.find({});
+  } catch (err) {
+    // TODO: add error handling for CRUD operations
+    console.log(err);
+  }
+  return allUsers;
+};
+/**
+ *
+ * @returns Promise resolving to an array of userNames
  */
 const readAllUserNames = async () => {
   let userNames;
@@ -44,6 +58,7 @@ module.exports = {
   /* CREATE */
   createUser,
   /* READ */
+  readAllUsers,
   readAllUserNames,
   /* UPDATE */
   /* DELETE */
