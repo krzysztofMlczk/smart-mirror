@@ -48,7 +48,6 @@ const Register = ({ displayOrientationChooser }) => {
     /* eslint-disable react/jsx-key */
     const componentsForSteps = [
       <UserNameForm
-        key={0}
         next={next}
         back={back}
         userName={userName}
@@ -58,21 +57,18 @@ const Register = ({ displayOrientationChooser }) => {
         isBackAvailable={displayOrientationChooser}
       />,
       <AvatarChooser
-        key={1}
         next={next}
         back={back}
         avatar={avatar}
         saveAvatar={setAvatar}
       />,
       <GoogleCredentials
-        key={2}
         next={next}
         back={back}
         googleData={googleData}
         saveGoogleData={setGoogleData}
       />,
       <FaceScanner
-        key={3}
         back={back}
         userName={userName}
         setSuccess={setRegisterSuccessful}
@@ -81,14 +77,12 @@ const Register = ({ displayOrientationChooser }) => {
     if (displayOrientationChooser) {
       componentsForSteps.unshift(
         <ScreenOrientationChooser
-          key={4}
           next={next}
           orientation={orientation}
           saveOrientation={setOrientation}
         />
       );
     }
-    console.log(componentsForSteps);
     return componentsForSteps[stepIndex];
   };
 
