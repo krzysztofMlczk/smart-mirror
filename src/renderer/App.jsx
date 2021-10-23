@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ThemeProvider } from '@material-ui/core/styles';
-import {
-  MemoryRouter as Router,
-  withRouter,
-  Switch,
-  Route,
-  useHistory,
-} from 'react-router-dom';
+import { Switch, Route, useHistory } from 'react-router-dom';
 import LoginScreen from './components/loginScreen/LoginScreen';
 import Register from './components/register/Register';
 import MainScreen from './components/mainScreen/MainScreen';
@@ -16,20 +10,29 @@ import './App.global.css';
 
 export default function App() {
   const [appReady, setAppReady] = useState(false);
-  const [displayOrientationChooser, setDisplayOrientationChooser] =
-    useState(false);
+  const [firstUserRegistration, setFirstUserRegistration] = useState(false);
   const history = useHistory();
 
+  /**
+   * This useEffect checks what screen orientation
+   * should be set while application is booting.
+   * If there is no global settings (no orientation set),
+   * then we don't have any users registered yet =>
+   * go straight to Register flow and display OrientationChooser.
+   * Otherwise just set the system orientation
+   */
   useEffect(() => {
-    window.middleware.db.users
-      .readAllUsers()
-      .then((users) => {
-        console.log(users);
-        if (users.length === 0) {
-          // if no users registered yet, go straight to register
-          // and display OrientationChooser in register flow
-          setDisplayOrientationChooser(true);
+    window.middleware.db.globalSettings
+      .readGlobalSettings()
+      .then((globalSettings) => {
+        console.table({ globalSettings });
+        if (!globalSettings) {
+          setFirstUserRegistration(true);
           history.push('/register');
+        } else {
+          window.middleware.screenOrientation.changeScreenOrientation(
+            globalSettings.orientation
+          );
         }
       })
       .catch((err) => console.log(err));
@@ -43,7 +46,7 @@ export default function App() {
             <LoginScreen />
           </Route>
           <Route path="/register">
-            <Register displayOrientationChooser={displayOrientationChooser} />
+            <Register displayOrientationChooser={firstUserRegistration} />
           </Route>
           <Route path="/mainscreen">
             <MainScreen />

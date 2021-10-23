@@ -15,7 +15,12 @@ const changeScreenOrientation = (orientation) => {
   }
 
   const screenOrientationChangerCommand = `./externals/scripts/changeScreenOrientation.sh ${parsedOrientation}`;
-  exec(screenOrientationChangerCommand);
+  try {
+    exec(screenOrientationChangerCommand);
+  } catch (err) {
+    // TODO: add error handling for orientation changing
+    console.log(err);
+  }
 };
 
 module.exports = {

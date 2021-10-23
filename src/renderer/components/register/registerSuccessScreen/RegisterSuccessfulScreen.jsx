@@ -6,12 +6,25 @@ import Typography from '@material-ui/core/Typography';
 
 import CheckmarkAnimated from './CheckmarkAnimated';
 
-const RegisterSuccessfulScreen = ({ userData }) => {
+const RegisterSuccessfulScreen = ({
+  userData,
+  firstUserRegistration,
+  orientation,
+}) => {
   const history = useHistory();
 
   useEffect(() => {
+    // create user on successful registration
     window.middleware.db.users.createUser(userData);
   }, [userData]);
+
+  useEffect(() => {
+    if (firstUserRegistration && orientation) {
+      /* && orientation - just a sanity check */
+      // global settings document is created ONLY when the first user registers successfully!
+      window.middleware.db.globalSettings.createGlobalSettings(orientation);
+    }
+  }, [firstUserRegistration, orientation]);
 
   useEffect(() => {
     const timer = setTimeout(() => {

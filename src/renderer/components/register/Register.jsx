@@ -89,7 +89,11 @@ const Register = ({ displayOrientationChooser }) => {
   return (
     <>
       {registerSuccessful ? (
-        <RegisterSuccessfulScreen userData={{ userName, avatar, googleData }} />
+        <RegisterSuccessfulScreen
+          userData={{ userName, avatar, googleData }}
+          firstUserRegistration={displayOrientationChooser}
+          orientation={orientation}
+        />
       ) : (
         <Grid
           container
