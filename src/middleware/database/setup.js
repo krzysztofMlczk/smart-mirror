@@ -17,6 +17,6 @@ const dsFactory = (fileName) =>
 // performed for each collection (SEE `CRUDs` folder)
 module.exports = {
   users: dsFactory('users.db'),
-  settings: dsFactory('settings.db'),
+  globalSettings: dsFactory('globalSettings.db'),
   // ... add here other collections if necessary
 };

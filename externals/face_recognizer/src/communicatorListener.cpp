@@ -33,22 +33,22 @@ void CommunicatorListenerThread::ThreadFunction()
 
   LOG_INFO("Listener: Connection accepted");
 
-  char readBuffer[BUFFER_SIZE];
+  char *buffer = new char[BUFFER_SIZE];
   uint64_t receivedChars = 0;
 
   while (m_running)
   {
     if (::utils::PollIn(newSocket))
     {
-      receivedChars = read(newSocket, readBuffer, BUFFER_SIZE);
+      receivedChars = read(newSocket, buffer, BUFFER_SIZE);
     }
 
     ASSERT(receivedChars < BUFFER_SIZE, "Listener: Incoming message exceeded the buffer size!");
 
     if (receivedChars != 0)
     {
-      readBuffer[receivedChars] = '\0';
-      const ICommand *cmd = parseCommand(readBuffer);
+      buffer[receivedChars] = '\0';
+      const ICommand *cmd = parseCommand(buffer);
 
       if (cmd)
       {
@@ -59,6 +59,7 @@ void CommunicatorListenerThread::ThreadFunction()
     }
   }
 
+  delete buffer;
   ThreadPreExit();
 }
 

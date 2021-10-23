@@ -29,6 +29,7 @@ void CommunicatorSenderThread::ThreadFunction()
 
   int newSocket;
   int addressLength = sizeof(m_address);
+  char *buffer = new char[BUFFER_SIZE];
 
   // Wait for the first connection
   ASSERT((newSocket = accept(m_socketFD, (struct sockaddr *)&m_address,
@@ -41,18 +42,24 @@ void CommunicatorSenderThread::ThreadFunction()
   {
     if (!m_commandQueue.empty())
     {
+      m_sendMutex.lock();
       std::string command = m_commandQueue.front();
       m_commandQueue.pop();
+      m_sendMutex.unlock();
 
       ASSERT(command.size() < BUFFER_SIZE, "Sender: Command buffer size exceeded!")
 
-      if (send(newSocket, command.c_str(), command.size(), 0) < 0)
+      memcpy((void *)buffer, command.c_str(), command.size());
+      memset((void *)(buffer + command.size()), 0, BUFFER_SIZE - command.size());
+
+      if (send(newSocket, buffer, BUFFER_SIZE, 0) < 0)
       {
         LOG_ERROR("Sender: Message could not be sent: %s", command.c_str());
       }
     }
   }
 
+  delete buffer;
   ThreadPreExit();
 }
 
