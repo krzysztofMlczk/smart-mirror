@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import TextField from '@material-ui/core/TextField';
-import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
+import { useHistory } from 'react-router-dom';
 
-import BackNextBtn from '../buttons/BackNextBtn';
 import BackNextBtnsRow from '../buttons/BackNextBtnsRow';
 
 const UserNameForm = ({
@@ -13,11 +12,12 @@ const UserNameForm = ({
   saveUserName,
   savedError,
   saveError,
-  isBackAvailable,
+  isLocalBackAvailable,
 }) => {
   const [username, setUsername] = useState(userName);
   const [taken, setTaken] = useState(null);
   const [error, setError] = useState(savedError);
+  const history = useHistory();
 
   const userNameEmpty = username === '';
   const errorOccured = error !== ' ';
@@ -73,43 +73,37 @@ const UserNameForm = ({
     }
   };
 
-  const onBack = () => {
-    saveUserName(username);
-    saveError(error);
-    back();
-  };
+  const onBack = isLocalBackAvailable
+    ? () => {
+        saveUserName(username);
+        saveError(error);
+        back();
+      }
+    : () => {
+        history.goBack();
+      };
 
   return (
-    <Container maxWidth="xs">
-      <TextField
-        fullWidth
-        label="Username"
-        color="secondary"
-        error={errorOccured}
-        helperText={error}
-        autoFocus={false}
-        value={username}
-        onChange={handleChange}
-      />
-      {isBackAvailable ? (
+    <>
+      <Container maxWidth="xs">
+        <TextField
+          fullWidth
+          label="Username"
+          color="secondary"
+          error={errorOccured}
+          helperText={error}
+          autoFocus={false}
+          value={username}
+          onChange={handleChange}
+        />
         <BackNextBtnsRow
           marginTop="40px"
           onBack={onBack}
           isNextDisabled={userNameEmpty || errorOccured}
           onNext={onNext}
         />
-      ) : (
-        <Box textAlign="center" mt={5}>
-          <BackNextBtn
-            variant="next"
-            disabled={userNameEmpty || errorOccured}
-            onClick={onNext}
-          >
-            Next
-          </BackNextBtn>
-        </Box>
-      )}
-    </Container>
+      </Container>
+    </>
   );
 };
 
