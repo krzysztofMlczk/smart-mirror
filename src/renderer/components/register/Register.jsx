@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
 
+import GridContainer from '../layout/GridContainer';
 import RegisterSuccessfulScreen from './registerSuccessScreen/RegisterSuccessfulScreen';
 import ScreenOrientationChooser from './ScreenOrientationChooser';
 import UserNameForm from './UserNameForm';
@@ -54,7 +54,7 @@ const Register = ({ displayOrientationChooser }) => {
         saveUserName={setUserName}
         savedError={error}
         saveError={setError}
-        isBackAvailable={displayOrientationChooser}
+        isLocalBackAvailable={displayOrientationChooser}
       />,
       <AvatarChooser
         next={next}
@@ -95,18 +95,13 @@ const Register = ({ displayOrientationChooser }) => {
           orientation={orientation}
         />
       ) : (
-        <Grid
-          container
-          direction="column"
-          justifyContent="space-between"
-          style={{ height: '90vh', margin: '5vh 0' }}
-        >
+        <GridContainer>
           <Typography align="center" variant="h2">
             {steps[step].title}
           </Typography>
           {getCurrentStepContent(step)}
           <CustomStepper activeStepIndex={step} steps={steps} />
-        </Grid>
+        </GridContainer>
       )}
     </>
   );
