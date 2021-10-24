@@ -28,10 +28,10 @@ class FaceRecognition {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         try {
-          this.sender = net.createConnection({ port: portSender });
+          this.sender = net.createConnection({ port: portReceiver });
 
           this.receiver = net.createConnection({
-            port: portReceiver,
+            port: portSender,
             onread: {
               buffer: Buffer.alloc(255),
               callback: (nread, data) => {

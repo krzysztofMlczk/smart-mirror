@@ -105,8 +105,23 @@ const useStyles = makeStyles({
 const ScannerScreen = ({ userName, setSuccess }) => {
   const [webcamReady, setWebcamReady] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [devices, setDevices] = useState([]);
   const overlayRef = useRef(null);
   const classes = useStyles();
+
+  const handleDevices = React.useCallback(
+    (mediaDevices) => {
+      setDevices(mediaDevices.filter(({ kind }) => kind === 'videoinput'));
+    },
+    [setDevices]
+  );
+
+  React.useEffect(() => {
+    navigator.mediaDevices
+      .enumerateDevices()
+      .then(handleDevices)
+      .catch((err) => console.log(err));
+  }, [handleDevices]);
 
   const onSuccess = useCallback(() => {
     setSuccess(true);
@@ -159,11 +174,14 @@ const ScannerScreen = ({ userName, setSuccess }) => {
         ) : (
           <CircularProgress color="secondary" />
         )}
-        <Webcam
-          height={webcamReady ? '100%' : '0%'}
-          audio={false}
-          onUserMedia={() => setWebcamReady(true)}
-        />
+        {devices.length ? (
+          <Webcam
+            height={webcamReady ? '100%' : '0%'}
+            audio={false}
+            onUserMedia={() => setWebcamReady(true)}
+            videoConstraints={{ deviceId: devices[2].deviceId }}
+          />
+        ) : null}
       </div>
     </>
   );
