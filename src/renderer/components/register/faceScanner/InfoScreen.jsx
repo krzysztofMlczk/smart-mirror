@@ -2,10 +2,10 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
 
+import BtnsRow from 'renderer/components/buttons/BtnsRow';
 import BackNextBtn from '../../buttons/BackNextBtn';
-import ParticleComponent from './ParticleComponent';
+import ParticleComponent from '../../visuals/ParticleComponent';
 
 const InfoScreen = ({ back, onStart }) => {
   return (
@@ -34,13 +34,7 @@ const InfoScreen = ({ back, onStart }) => {
         </Typography>
       </Container>
       <Container maxWidth="xs">
-        <Grid
-          container
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
-          style={{ marginTop: '24px' }}
-        >
+        <BtnsRow marginTop="24px">
           <BackNextBtn variant="back" onClick={back}>
             Back
           </BackNextBtn>
@@ -48,12 +42,11 @@ const InfoScreen = ({ back, onStart }) => {
             variant="outlined"
             color="secondary"
             size="large"
-            // startIcon={<AccountCircleOutlinedIcon />}
             onClick={onStart}
           >
             Start Scanning
           </Button>
-        </Grid>
+        </BtnsRow>
       </Container>
       <ParticleComponent />
     </>

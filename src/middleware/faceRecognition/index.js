@@ -5,8 +5,9 @@ const launchFaceRecognizer = require('./launcher/launcher');
 
 class FaceRecognition {
   constructor() {
-    this.registeringProgressCallback = undefined;
-    this.registeringSuccessCallback = undefined;
+    this.onRegisterProgress = undefined;
+    this.onRegisterSuccess = undefined;
+    this.onRecognitionSuccess = undefined;
 
     launchFaceRecognizer()
       .then((ports) => {
@@ -38,10 +39,13 @@ class FaceRecognition {
 
                 switch (msg.command) {
                   case commands.PROGRESS:
-                    this.registeringProgressCallback(msg.value);
+                    this.onRegisterProgress(msg.value);
                     break;
                   case commands.REGISTERED:
-                    this.registeringSuccessCallback();
+                    this.onRegisterSuccess();
+                    break;
+                  case commands.RECOGNIZED:
+                    this.onRecognitionSuccess(msg.value);
                     break;
                   case commands.ERROR:
                     // TODO: fire error callback
@@ -67,15 +71,20 @@ class FaceRecognition {
   };
 
   setProgressCallback = (progressCallback) => {
-    this.registeringProgressCallback = progressCallback;
+    this.onRegisterProgress = progressCallback;
   };
 
   setSuccessCallback = (successCallback) => {
-    this.registeringSuccessCallback = successCallback;
+    this.onRegisterSuccess = successCallback;
   };
 
   register = (userName) => {
     this.sender.write(commands.REGISTER(userName));
+  };
+
+  recognize = (recognizedCallback) => {
+    this.onRecognitionSuccess = recognizedCallback;
+    this.sender.write(commands.RECOGNIZE);
   };
 }
 

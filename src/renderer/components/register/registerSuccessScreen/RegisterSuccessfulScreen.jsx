@@ -14,6 +14,7 @@ const RegisterSuccessfulScreen = ({
   const history = useHistory();
 
   useEffect(() => {
+    // TODO: save all user data into react.context
     // create user on successful registration
     window.middleware.db.users.createUser(userData);
   }, [userData]);
