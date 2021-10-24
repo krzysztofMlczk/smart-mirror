@@ -2,7 +2,7 @@ const portastic = require('portastic');
 const { exec } = require('child_process');
 
 const launchFaceRecognizer = () => {
-  const cameraId = 1;
+  const cameraId = 2;
   const launcherCommand = (portSender, portReceiver) => {
     return `./externals/scripts/launcher.sh ${portSender} ${portReceiver} ${cameraId}`;
   };
