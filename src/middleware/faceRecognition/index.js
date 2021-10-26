@@ -78,8 +78,8 @@ class FaceRecognition {
     this.onRegisterSuccess = successCallback;
   };
 
-  register = (userName) => {
-    this.sender.write(commands.REGISTER(userName));
+  register = (userId) => {
+    this.sender.write(commands.REGISTER(userId));
   };
 
   recognize = (recognizedCallback) => {

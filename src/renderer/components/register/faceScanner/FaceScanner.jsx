@@ -3,18 +3,18 @@ import React, { useState } from 'react';
 import InfoScreen from './InfoScreen';
 import ScannerScreen from './ScannerScreen';
 
-const FaceScanner = ({ back, userName, setSuccess }) => {
+const FaceScanner = ({ back, userId, setSuccess }) => {
   const [scanning, setScanning] = useState(false);
 
   const onStart = () => {
     setScanning(true);
-    window.middleware.faceRecognition.register(userName);
+    window.middleware.faceRecognition.register(userId);
   };
 
   return (
     <>
       {scanning ? (
-        <ScannerScreen userName={userName} setSuccess={setSuccess} />
+        <ScannerScreen userId={userId} setSuccess={setSuccess} />
       ) : (
         <InfoScreen back={back} onStart={onStart} />
       )}
