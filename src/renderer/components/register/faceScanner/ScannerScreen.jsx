@@ -128,10 +128,6 @@ const ScannerScreen = ({ userId, setSuccess }) => {
   }, [setSuccess]);
 
   useEffect(() => {
-    onSuccess();
-  }, [onSuccess]);
-
-  useEffect(() => {
     window.middleware.faceRecognition.setSuccessCallback(onSuccess);
   }, [onSuccess]);
 
