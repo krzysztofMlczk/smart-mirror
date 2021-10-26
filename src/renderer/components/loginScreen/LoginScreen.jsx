@@ -34,18 +34,6 @@ const LoginScreen = () => {
   const { setUserData } = useContext(UserContext);
 
   /**
-   * FOR DEBUG: simulate recognizing the user of this id
-   */
-  useEffect(() => {
-    const timer = setTimeout(
-      () => setRecognizedUserId('107622913887326078037'),
-      2000
-    );
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  /**
    * This useEffect calls C++ face recognition module
    * to begin recognizing the user flow
    */
