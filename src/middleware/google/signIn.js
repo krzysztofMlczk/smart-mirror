@@ -1,11 +1,12 @@
 /* This code is based on https://blog.ecliptic.io/google-auth-in-electron-a47b773940ae */
+/* Official google instructions are here: https://developers.google.com/identity/protocols/oauth2/native-app#step-2:-send-a-request-to-googles-oauth-2.0-server */
 const { ipcRenderer } = require('electron');
 const qs = require('qs');
 const keys = require('./keys.json');
+const fetchGoogleProfile = require('./profile');
 
 const GOOGLE_AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/v2/auth'; // see: https://developers.google.com/identity/protocols/oauth2/native-app
 const GOOGLE_TOKEN_URL = 'https://www.googleapis.com/oauth2/v4/token'; // see: https://developers.google.com/identity/protocols/oauth2/native-app
-const GOOGLE_PROFILE_URL = 'https://www.googleapis.com/userinfo/v2/me'; // see: https://developers.google.com/identity/protocols/oauth2/native-app
 
 async function signInWithPopup() {
   // TODO: Generate and validate PKCE code_challenge value
@@ -32,16 +33,6 @@ async function fetchAccessTokens(code) {
       redirect_uri: keys.redirectUri,
       grant_type: 'authorization_code',
     }),
-  }).then((data) => data.json());
-
-  return response;
-}
-
-async function fetchGoogleProfile(accessToken) {
-  const response = await fetch(GOOGLE_PROFILE_URL, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
   }).then((data) => data.json());
 
   return response;
