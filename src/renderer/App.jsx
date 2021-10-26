@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { Switch, Route, useHistory } from 'react-router-dom';
 import LoginScreen from './components/loginScreen/LoginScreen';
 import Register from './components/register/Register';
 import MainScreen from './components/mainScreen/MainScreen';
 import BootingScreen from './components/bootingScreen/BootingScreen';
+import UserContext from './context/UserContext';
 import theme from './theme/theme';
 import './App.global.css';
 
 export default function App() {
   const [appReady, setAppReady] = useState(false);
   const [firstUserRegistration, setFirstUserRegistration] = useState(false);
+  const [userData, setUserData] = useState(null); // this will be populated using context
+  const contextValue = useMemo(() => ({ userData, setUserData }), [userData]); // context value should change only when userData is updated
+
   const history = useHistory();
 
   /**
@@ -41,17 +45,19 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       {appReady ? (
-        <Switch>
-          <Route exact path="/">
-            <LoginScreen />
-          </Route>
-          <Route path="/register">
-            <Register displayOrientationChooser={firstUserRegistration} />
-          </Route>
-          <Route path="/mainscreen">
-            <MainScreen />
-          </Route>
-        </Switch>
+        <UserContext.Provider value={contextValue}>
+          <Switch>
+            <Route exact path="/">
+              <LoginScreen />
+            </Route>
+            <Route path="/register">
+              <Register displayOrientationChooser={firstUserRegistration} />
+            </Route>
+            <Route path="/mainscreen">
+              <MainScreen />
+            </Route>
+          </Switch>
+        </UserContext.Provider>
       ) : (
         <BootingScreen setAppReady={setAppReady} />
       )}

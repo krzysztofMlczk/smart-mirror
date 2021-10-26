@@ -1,23 +1,48 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 
 import CheckmarkAnimated from './CheckmarkAnimated';
+import UserContext from '../../../context/UserContext';
 
 const RegisterSuccessfulScreen = ({
-  userData,
+  userName,
+  avatar,
+  googleData,
   firstUserRegistration,
   orientation,
 }) => {
   const history = useHistory();
+  const { setUserData } = useContext(UserContext);
 
+  /**
+   * This useEffect:
+   * - creates new user document in the users collection
+   * - saves all relevant data into react.Context (see UserContext.js for the context object structure)
+   */
   useEffect(() => {
-    // TODO: save all user data into react.context
-    // create user on successful registration
-    window.middleware.db.users.createUser(userData);
-  }, [userData]);
+    /* eslint-disable @typescript-eslint/naming-convention */
+    const { tokens, userData } = googleData;
+    const { access_token, expires_in, token_type, id_token } = tokens;
+    const { email, locale, name, picture } = userData;
+    // SAVE ALL RELEVANT DATA INTO REACT.CONTEXT
+    setUserData({
+      userName,
+      avatar,
+      accessToken: access_token,
+      expiresIn: expires_in,
+      tokenType: token_type,
+      idToken: id_token,
+      email,
+      locale,
+      name,
+      picture,
+    });
+    // CREATE NEW USER IN DB ON SUCCESSFUL REGISTRATION
+    window.middleware.db.users.createUser({ userName, avatar, googleData });
+  }, [userName, avatar, googleData, setUserData]);
 
   useEffect(() => {
     if (firstUserRegistration && orientation) {

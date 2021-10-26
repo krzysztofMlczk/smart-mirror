@@ -102,7 +102,7 @@ const useStyles = makeStyles({
   },
 });
 
-const ScannerScreen = ({ userName, setSuccess }) => {
+const ScannerScreen = ({ userId, setSuccess }) => {
   const [webcamReady, setWebcamReady] = useState(false);
   const [progress, setProgress] = useState(0);
   const [devices, setDevices] = useState([]);
@@ -128,6 +128,10 @@ const ScannerScreen = ({ userName, setSuccess }) => {
   }, [setSuccess]);
 
   useEffect(() => {
+    onSuccess();
+  }, [onSuccess]);
+
+  useEffect(() => {
     window.middleware.faceRecognition.setSuccessCallback(onSuccess);
   }, [onSuccess]);
 
@@ -136,8 +140,8 @@ const ScannerScreen = ({ userName, setSuccess }) => {
   }, [setProgress]);
 
   useEffect(() => {
-    window.middleware.faceRecognition.register(userName);
-  }, [userName]);
+    window.middleware.faceRecognition.register(userId);
+  }, [userId]);
 
   return (
     <>

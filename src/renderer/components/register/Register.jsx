@@ -32,6 +32,7 @@ const Register = ({ displayOrientationChooser }) => {
   const [userName, setUserName] = useState('');
   const [error, setError] = useState(' ');
   const [avatar, setAvatar] = useState(null);
+  const [googleAccessDenied, setGoogleAccessDenied] = useState(false);
   const [googleData, setGoogleData] = useState(null);
   const [registerSuccessful, setRegisterSuccessful] = useState(false);
   const steps = getSteps(displayOrientationChooser);
@@ -65,12 +66,14 @@ const Register = ({ displayOrientationChooser }) => {
       <GoogleCredentials
         next={next}
         back={back}
+        googleAccessDenied={googleAccessDenied}
+        setGoogleAccessDenied={setGoogleAccessDenied}
         googleData={googleData}
         saveGoogleData={setGoogleData}
       />,
       <FaceScanner
         back={back}
-        userName={userName}
+        userId={googleData?.userData?.id} // pass id from google as user identifier to FaceRecognition
         setSuccess={setRegisterSuccessful}
       />,
     ];
@@ -90,7 +93,9 @@ const Register = ({ displayOrientationChooser }) => {
     <>
       {registerSuccessful ? (
         <RegisterSuccessfulScreen
-          userData={{ userName, avatar, googleData }}
+          userName={userName}
+          avatar={avatar}
+          googleData={googleData}
           firstUserRegistration={displayOrientationChooser}
           orientation={orientation}
         />
