@@ -23,15 +23,12 @@ else
 	DEVICEID=0
 	DEVICENAME="video${DEVICEID}"
 
-	while ! [ -z $(ls /dev | grep ${DEVICENAME}) ]
+	while ! [[ -z $(ls /dev | grep ${DEVICENAME}) ]]
 	do
 		DEVICEID=$((DEVICEID+1))
 	   	DEVICENAME="video${DEVICEID}"
 	done
 fi
 
-sudo modprobe v4l2loopback exclusive_caps=1
-eval "gst-launch-1.0 v4l2src device=/dev/video${1} ! tee name=t ! queue ! v4l2sink device=/dev/video${DEVICEID}"
-
-
-
+eval "sudo modprobe v4l2loopback exclusive_caps=1 video_nr=${DEVICEID}"
+eval "ffmpeg -i /dev/video${1} -f v4l2 -codec:v rawvideo -pix_fmt yuv420p /dev/video${DEVICEID}"

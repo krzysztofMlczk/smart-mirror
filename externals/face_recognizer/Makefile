@@ -1,95 +1,57 @@
 #
-# 'make'        build executable file 'main'
+# 'make'        build executable file 'mycc'
 # 'make clean'  removes all .o and executable files
 #
 
-# define the Cpp compiler to use
+# define the C compiler to use
 CXX = g++
 
 # define any compile-time flags
-CXXFLAGS	:= -std=c++17 -Wall -Wextra -g
-
-# define library paths in addition to /usr/lib
-#   if I wanted to include libraries not in /usr/lib I'd specify
-#   their path using -Lpath, something like:
-LFLAGS =
-
-# define output directory
-OUTPUT	:= output
-
-# define source directory
-SRC		:= src
-
-# define include directory
-INCLUDE	:= include
-
-# define lib directory
-LIB		:= lib
-
-ifeq ($(OS),Windows_NT)
-MAIN	:= face-recognizer.exe
-SOURCEDIRS	:= $(SRC)
-INCLUDEDIRS	:= $(INCLUDE)
-LIBDIRS		:= $(LIB)
-FIXPATH = $(subst /,\,$1)
-RM			:= del /q /f
-MD	:= mkdir
-else
-MAIN	:= face-recognizer
-SOURCEDIRS	:= $(shell find $(SRC) -type d)
-INCLUDEDIRS	:= $(shell find $(INCLUDE) -type d)
-LIBDIRS		:= $(shell find $(LIB) -type d)
-LIBFILES	:= $(shell find $(LIBDIRS) -type f -name "*.a" -o -name "*.so" -printf "%f\n" | xargs basename -s .a -s .so -a | sed 's/lib//')
-EXTRALIB	:= -lstdc++fs -pthread
-EXTRALIBFILES	:= libstdc++fs.a
-FIXPATH = $1
-RM = rm -f
-MD	:= mkdir -p
-endif
+CFLAGS = -std=c++17 -Wall -Wextra -g -Wl,-rpath,../lib,-rpath,../face_recognizer/lib
 
 # define any directories containing header files other than /usr/include
-INCLUDES	:= $(patsubst %,-I%, $(INCLUDEDIRS:%/=%))
+INCLUDES = -I./include -I./include/opencv2 -I./include/opencv2/objdetect -I./include/opencv2/highgui -I./include/opencv2/imgproc
 
-# define the C libs
-LIBS		:= $(patsubst %,-L%, $(LIBDIRS:%/=%))
-LIBS		+= $(patsubst %,-l%, $(LIBFILES:%/=%)) 
+# define library paths in addition to /usr/lib
+LFLAGS = -L./lib
+
+# define any libraries to link into executable
+LIBS = -lopencv_imgcodecs -lopencv_imgproc -lopencv_core -lopencv_videoio -lopencv_highgui  -lopencv_objdetect -lopencv_face -lopencv_dnn -lopencv_calib3d -lopencv_features2d -lopencv_flann -lstdc++fs -pthread
 
 # define the C source files
-SOURCES		:= $(wildcard $(patsubst %,%/*.cpp, $(SOURCEDIRS)))
+SRC = ./src
+SRCS = $(wildcard $(patsubst %,%/*.cpp, $(SRC)))
 
 # define the C object files 
-OBJECTS		:= $(SOURCES:.cpp=.o)
-
 #
-# The following part of the makefile is generic; it can be used to 
-# build any executable just by changing the definitions above and by
-# deleting dependencies appended to the file from 'make depend'
+# This uses Suffix Replacement within a macro:
+#   $(name:string1=string2)
+#         For each word in 'name' replace 'string1' with 'string2'
+# Below we are replacing the suffix .c of all words in the macro SRCS
+# with the .o suffix
 #
+OBJS = $(SRCS:.cpp=.o)
 
-OUTPUTMAIN	:= $(call FIXPATH,$(OUTPUT)/$(MAIN))
+# define the executable file 
+MAIN = output/face-recognizer
 
-all: $(OUTPUT) $(MAIN)
-	@echo Executing 'all' complete!
+# define util commands
+RM = rm -f
 
-$(OUTPUT):
-	$(MD) $(OUTPUT)
+all:    $(MAIN)
+	@echo Build completed!
 
-$(MAIN): $(OBJECTS) 
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $(OUTPUTMAIN) $(OBJECTS) $(LFLAGS) $(LIBS) $(EXTRALIB)
+$(MAIN): $(OBJS) 
+	$(CXX) $(CFLAGS) $(INCLUDES) -o $(MAIN) $(OBJS) $(LFLAGS) $(LIBS)
 
 # this is a suffix replacement rule for building .o's from .c's
 # it uses automatic variables $<: the name of the prerequisite of
 # the rule(a .c file) and $@: the name of the target of the rule (a .o file) 
 # (see the gnu make manual section about automatic variables)
 .cpp.o:
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $<  -o $@
+	$(CXX) $(CFLAGS) $(INCLUDES) -c $<  -o $@
 
-.PHONY: clean
 clean:
-	$(RM) $(OUTPUTMAIN)
-	$(RM) $(call FIXPATH,$(OBJECTS))
-	@echo Cleanup complete!
-
-run: all
-	./$(OUTPUTMAIN)
-	@echo Executing 'run: all' complete!
+	$(RM) $(SRC)/*.o $(SRC)/*~ $(MAIN)
+	
+rebuild:	clean all

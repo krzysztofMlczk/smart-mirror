@@ -67,7 +67,7 @@ void FileSystem::CreateUserMapping()
     LOG_ERROR("%s was expected to be a directory!", dirname.c_str());
   }
 
-  LOG_INFO("Created user mapping. Users found: %ld", m_userLabelMap.size());
+  LOG_INFO("Created user mapping. Users found: %d", m_userLabelMap.size());
 }
 
 void FileSystem::AddUserMapping(std::string name)

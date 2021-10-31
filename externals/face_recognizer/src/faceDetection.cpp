@@ -221,7 +221,7 @@ void FaceDetector::Train()
   std::vector<Mat> images = ExtrudeImages(frames);
   std::vector<int> labels = ExtrudeLabels(frames);
 
-  LOG_INFO("Face dataset was loaded (%ld frames)", images.size());
+  LOG_INFO("Face dataset was loaded (%d frames)", images.size());
 
   if (images.size() == 0)
   {

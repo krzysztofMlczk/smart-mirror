@@ -27,5 +27,5 @@ else
 	ORIENTATION="normal"
 fi
 
-xrandr --output LVDS-1-1 --rotate ${ORIENTATION}
+xrandr -o ${ORIENTATION}
 
