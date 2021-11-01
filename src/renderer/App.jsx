@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { Switch, Route, useHistory } from 'react-router-dom';
 import LoginScreen from './components/loginScreen/LoginScreen';
+import LoginWithCredentials from './components/loginWithCredentials/LoginWithCredentials';
 import Register from './components/register/Register';
 import MainScreen from './components/mainScreen/MainScreen';
 import BootingScreen from './components/bootingScreen/BootingScreen';
@@ -12,6 +13,8 @@ import './App.global.css';
 export default function App() {
   const [appReady, setAppReady] = useState(false);
   const [firstUserRegistration, setFirstUserRegistration] = useState(false);
+  const [expiredRefreshTokenDetected, setExpiredRefreshTokenDetected] =
+    useState(false);
   const [userData, setUserData] = useState(null); // this will be populated using context
   const contextValue = useMemo(() => ({ userData, setUserData }), [userData]); // context value should change only when userData is updated
 
@@ -48,12 +51,20 @@ export default function App() {
         <UserContext.Provider value={contextValue}>
           <Switch>
             <Route exact path="/">
-              <LoginScreen />
+              <LoginScreen
+                setExpiredRefreshTokenDetected={setExpiredRefreshTokenDetected}
+              />
             </Route>
-            <Route path="/register">
+            <Route exact path="/login-with-credentials">
+              <LoginWithCredentials
+                expiredRefreshTokenDetected={expiredRefreshTokenDetected}
+                setExpiredRefreshTokenDetected={setExpiredRefreshTokenDetected}
+              />
+            </Route>
+            <Route exact path="/register">
               <Register displayOrientationChooser={firstUserRegistration} />
             </Route>
-            <Route path="/mainscreen">
+            <Route exact path="/mainscreen">
               <MainScreen />
             </Route>
           </Switch>

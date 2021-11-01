@@ -1,5 +1,5 @@
 const GOOGLE_PROFILE_URL = 'https://www.googleapis.com/userinfo/v2/me'; // see: https://developers.google.com/identity/protocols/oauth2/native-app
-
+// see this to know more about error handling: https://stackoverflow.com/questions/49902417/how-to-catch-401-error-using-fetch-method-of-javascript
 /**
  * Fetches google profile data using access token
  *
@@ -17,7 +17,7 @@ const GOOGLE_PROFILE_URL = 'https://www.googleapis.com/userinfo/v2/me'; // see: 
  * }
  */
 async function fetchGoogleProfile(accessToken) {
-  console.log('Fetching google profile');
+  console.log('Fetching Google Profile');
   const response = await fetch(GOOGLE_PROFILE_URL, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
