@@ -49,7 +49,7 @@ bool FaceDetector::Init()
   m_mode->OnInit();
 
   // Start capturing
-  m_capture.open(m_cameraIndex);
+  ASSERT(m_capture.open(m_cameraIndex), "Video device cannot be opened!");
 
   m_isRunning = m_capture.isOpened();
   return m_isRunning;
@@ -64,6 +64,7 @@ void FaceDetector::Update()
 
   Mat frame;
   m_capture >> frame;
+  
   ToGrayScale(frame);
 
   if (!frame.empty())
@@ -177,7 +178,7 @@ bool FaceDetector::GetEyesPosition(const Mat &&img, std::pair<Point, Point> &eye
   m_nestedCascade.detectMultiScale(img, nestedObjects, m_paramsEyes.scaleFactor,
                                    m_paramsEyes.minNeighbours, m_paramsEyes.flags,
                                    Size(m_paramsEyes.minSize, m_paramsEyes.minSize));
-
+  
   if (nestedObjects.size() == 2)
   {
     Rect leftEyeRect = (nestedObjects[0].x < nestedObjects[1].x) ? nestedObjects[0] : nestedObjects[1];
@@ -191,6 +192,7 @@ bool FaceDetector::GetEyesPosition(const Mat &&img, std::pair<Point, Point> &eye
     rightEyeCenter.y = cvRound((face.y + rightEyeRect.y + rightEyeRect.height * 0.5) * m_scale);
 
     eyesPosition = std::pair<Point, Point>(leftEyeCenter, rightEyeCenter);
+  
     return true;
   }
 
@@ -350,6 +352,20 @@ void FaceDetector::SetMode(DetectorMode mode)
 
 void FaceDetector::SetupParams()
 {
+#ifdef __arm__
+
+  m_paramsFace.scaleFactor = 1.03f;
+  m_paramsFace.minNeighbours = 6;
+  m_paramsFace.flags = 0 | CASCADE_SCALE_IMAGE;
+  m_paramsFace.minSize = 30;
+
+  m_paramsEyes.scaleFactor = 1.10f;
+  m_paramsEyes.minNeighbours = 2;
+  m_paramsEyes.flags = 0 | CASCADE_SCALE_IMAGE;
+  m_paramsEyes.minSize = 10;
+  
+#elif defined _WIN64 || defined _WIN32
+
   m_paramsFace.scaleFactor = 1.03f;
   m_paramsFace.minNeighbours = 6;
   m_paramsFace.flags = 0 | CASCADE_SCALE_IMAGE;
@@ -359,6 +375,20 @@ void FaceDetector::SetupParams()
   m_paramsEyes.minNeighbours = 6;
   m_paramsEyes.flags = 0 | CASCADE_SCALE_IMAGE;
   m_paramsEyes.minSize = 30;
+  
+#elif defined __linux__
+
+  m_paramsFace.scaleFactor = 1.03f;
+  m_paramsFace.minNeighbours = 6;
+  m_paramsFace.flags = 0 | CASCADE_SCALE_IMAGE;
+  m_paramsFace.minSize = 30;
+
+  m_paramsEyes.scaleFactor = 1.05f;
+  m_paramsEyes.minNeighbours = 6;
+  m_paramsEyes.flags = 0 | CASCADE_SCALE_IMAGE;
+  m_paramsEyes.minSize = 30;
+  
+#endif
 }
 
 void FaceDetector::Cleanup()

@@ -13,8 +13,8 @@ cd smart-mirror-dev
 git clone https://github.com/krzysztofMlczk/smart-mirror.git
 
 # Update
-sudo apt upgrade
 sudo apt update
+sudo apt upgrade
 
 # OpenCV
 # bash ./SETUP-OPENCV.sh

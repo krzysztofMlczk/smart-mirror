@@ -179,7 +179,7 @@ const ScannerScreen = ({ userId, setSuccess }) => {
             height={webcamReady ? '100%' : '0%'}
             audio={false}
             onUserMedia={() => setWebcamReady(true)}
-            videoConstraints={{ deviceId: devices[2].deviceId }}
+            videoConstraints={{ deviceId: devices[devices.length - 1].deviceId }}
           />
         ) : null}
       </div>
