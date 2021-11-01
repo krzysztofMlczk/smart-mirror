@@ -8,6 +8,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 
 import UserContext from 'renderer/context/UserContext';
+import routes from '../../routes/routes';
 import Hint from './Hint';
 import GridContainer from '../layout/GridContainer';
 import ParticleComponent from '../visuals/ParticleComponent';
@@ -32,6 +33,15 @@ const LoginScreen = ({ setExpiredRefreshTokenDetected }) => {
   const classes = useStyles();
   const history = useHistory();
   const { setUserData } = useContext(UserContext);
+
+  // FOR DEBUG: automatic recognition
+  // useEffect(() => {
+  //   const timer = setTimeout(
+  //     () => setRecognizedUserId('107622913887326078037'),
+  //     20000
+  //   );
+  //   return () => clearTimeout(timer);
+  // });
 
   /**
    * This useEffect calls C++ face recognition module
@@ -59,10 +69,7 @@ const LoginScreen = ({ setExpiredRefreshTokenDetected }) => {
             await window.middleware.db.users.readUserById(recognizedUserId);
           // FETCH NEW ACCESS TOKEN
           const accessTokenData = await window.middleware.google
-            .refreshAccessToken(
-              // googleData.tokens.refreshToken
-              '123'
-            )
+            .refreshAccessToken(googleData.tokens.refreshToken)
             .catch((err) => {
               // REFRESH TOKEN EXPIRATION HANDLING
               // The most important reason why logIn function might fail
@@ -71,7 +78,7 @@ const LoginScreen = ({ setExpiredRefreshTokenDetected }) => {
               // to obtain new refreshToken user has to authenticate with credentials again
               console.log(err);
               setExpiredRefreshTokenDetected(true);
-              history.push('/login-with-credentials');
+              history.push(routes.CREDENTIALS_LOGIN);
             });
           if (accessTokenData) {
             const { access_token, expires_in, token_type, id_token } =
@@ -93,7 +100,7 @@ const LoginScreen = ({ setExpiredRefreshTokenDetected }) => {
               picture,
             });
             // go to main screen on successful recognition and access_token refreshment
-            history.push('/mainscreen');
+            history.push(routes.MAIN);
           }
         } catch (err) {
           // TODO: Implement valid error handling

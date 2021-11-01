@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 
+import routes from '../../../routes/routes';
 import CheckmarkAnimated from './CheckmarkAnimated';
 import UserContext from '../../../context/UserContext';
 
@@ -54,7 +55,7 @@ const RegisterSuccessfulScreen = ({
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      history.push('/mainscreen');
+      history.push(routes.MAIN);
     }, 3000);
     return () => clearTimeout(timer);
   });
