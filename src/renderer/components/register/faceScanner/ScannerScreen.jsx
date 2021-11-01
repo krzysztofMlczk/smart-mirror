@@ -109,14 +109,14 @@ const ScannerScreen = ({ userId, setSuccess }) => {
   const overlayRef = useRef(null);
   const classes = useStyles();
 
-  const handleDevices = React.useCallback(
+  const handleDevices = useCallback(
     (mediaDevices) => {
       setDevices(mediaDevices.filter(({ kind }) => kind === 'videoinput'));
     },
     [setDevices]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     navigator.mediaDevices
       .enumerateDevices()
       .then(handleDevices)
@@ -127,9 +127,10 @@ const ScannerScreen = ({ userId, setSuccess }) => {
     setSuccess(true);
   }, [setSuccess]);
 
-  useEffect(() => {
-    onSuccess();
-  }, [onSuccess]);
+  // FOR DEBUG: successful face registration mock up
+  // useEffect(() => {
+  //   onSuccess();
+  // }, [onSuccess]);
 
   useEffect(() => {
     window.middleware.faceRecognition.setSuccessCallback(onSuccess);

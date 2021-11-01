@@ -7,6 +7,7 @@ import AddIcon from '@material-ui/icons/Add';
 import AccountCircleOutlinedIcon from '@material-ui/icons/AccountCircleOutlined';
 import { Link, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
+import routes from '../../routes/routes';
 
 import GridContainer from '../layout/GridContainer';
 import BackNextBtn from '../buttons/BackNextBtn';
@@ -85,7 +86,7 @@ const LoginWithCredentials = ({
           picture,
         });
         // go to the main screen when successful
-        history.push('/mainscreen');
+        history.push(routes.MAIN);
       }
     } catch (err) {
       console.log(err);
