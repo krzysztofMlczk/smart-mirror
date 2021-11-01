@@ -49,7 +49,7 @@ bool FaceDetector::Init()
   m_mode->OnInit();
 
   // Start capturing
-  ASSERT(m_capture.open(m_cameraIndex), "Video device cannot be opened!");
+  ASSERT(m_capture.open(m_cameraIndex, CAP_V4L2), "Video device cannot be opened!");
 
   m_isRunning = m_capture.isOpened();
   return m_isRunning;

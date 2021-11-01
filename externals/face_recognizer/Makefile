@@ -7,13 +7,13 @@
 CXX = g++
 
 # define any compile-time flags
-CFLAGS = -std=c++17 -Wall -Wextra -g -Wl,-rpath,../lib,-rpath,../face_recognizer/lib
+CFLAGS = -std=c++17 -Wall -Wextra -g -Wl,-rpath,/usr/local/lib
 
 # define any directories containing header files other than /usr/include
-INCLUDES = -I./include -I./include/opencv2 -I./include/opencv2/objdetect -I./include/opencv2/highgui -I./include/opencv2/imgproc
+INCLUDES = -I/usr/local/include/opencv4/opencv2 -I/usr/local/include/opencv4 -I/usr/local/include/opencv4/opencv2/objdetect -I./usr/local/include/opencv4/opencv2/highgui -I/usr/local/include/opencv4/opencv2/imgproc
 
 # define library paths in addition to /usr/lib
-LFLAGS = -L./lib
+LFLAGS = -L/usr/local/lib
 
 # define any libraries to link into executable
 LIBS = -lopencv_imgcodecs -lopencv_imgproc -lopencv_core -lopencv_videoio -lopencv_highgui  -lopencv_objdetect -lopencv_face -lopencv_dnn -lopencv_calib3d -lopencv_features2d -lopencv_flann -lstdc++fs -pthread
