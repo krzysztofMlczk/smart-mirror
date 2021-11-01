@@ -13,6 +13,7 @@ const keys = require('./keys.json');
  *  scope: "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid",
  *  token_type: "Bearer",
  * }
+ * returned promise resolves to null when refresh token is not valid / expired
  */
 async function refreshAccessToken(refreshToken) {
   console.log('Refreshing access token');
@@ -26,7 +27,13 @@ async function refreshAccessToken(refreshToken) {
       client_id: keys.clientId,
       grant_type: 'refresh_token',
     }),
-  }).then((data) => data.json());
+  }).then((res) => {
+    if (res.status !== 200) {
+      throw new Error(res.status);
+    }
+    return res.json();
+  });
+
   // console.log(response);
   return response;
 }

@@ -27,7 +27,7 @@ const useStyles = makeStyles({
   },
 });
 
-const LoginScreen = () => {
+const LoginScreen = ({ setExpiredRefreshTokenDetected }) => {
   const [recognizedUserId, setRecognizedUserId] = useState(null);
   const classes = useStyles();
   const history = useHistory();
@@ -51,46 +51,58 @@ const LoginScreen = () => {
    */
   useEffect(() => {
     /* eslint-disable @typescript-eslint/naming-convention */
-    async function logIn() {
-      // GET USER FROM DB BY GOOGLE ID
-      const { userName, avatar, googleData } =
-        await window.middleware.db.users.readUserById(recognizedUserId);
-      // FETCH NEW ACCESS TOKEN
-      const { access_token, expires_in, token_type, id_token } =
-        await window.middleware.google.refreshAccessToken(
-          googleData.tokens.refreshToken
-        );
-      // FETCH DYNAMIC GOOGLE PROFILE DATA
-      const { email, locale, name, picture } =
-        await window.middleware.google.fetchGoogleProfile(access_token);
-      // SAVE ALL RELEVANT DATA INTO REACT.CONTEXT
-      setUserData({
-        userName,
-        avatar,
-        accessToken: access_token,
-        expiresIn: expires_in,
-        tokenType: token_type,
-        idToken: id_token,
-        email,
-        locale,
-        name,
-        picture,
-      });
-    }
     if (recognizedUserId) {
-      try {
-        logIn();
-        history.push('/mainscreen'); // go to main screen on successful recognition
-      } catch (err) {
-        // TODO: Implement valid error handling
-        // There might be a lot of reasons why the logIn function might fail
-        // but the most probable is that the refreshToken is not valid anymore
-        // which happens when: https://developers.google.com/identity/protocols/oauth2#expiration
-        // to obtain new refreshToken user has to authenticate with credentials
-        history.push('/login-with-credentials');
-      }
+      (async function logIn() {
+        try {
+          // GET USER FROM DB BY GOOGLE ID
+          const { userName, avatar, googleData } =
+            await window.middleware.db.users.readUserById(recognizedUserId);
+          // FETCH NEW ACCESS TOKEN
+          const accessTokenData = await window.middleware.google
+            .refreshAccessToken(
+              // googleData.tokens.refreshToken
+              '123'
+            )
+            .catch((err) => {
+              // REFRESH TOKEN EXPIRATION HANDLING
+              // The most important reason why logIn function might fail
+              // trying to refresh an accessToken with expired refreshToken
+              // refreshToken might expire in scenarios mentioned here: https://developers.google.com/identity/protocols/oauth2#expiration
+              // to obtain new refreshToken user has to authenticate with credentials again
+              console.log(err);
+              setExpiredRefreshTokenDetected(true);
+              history.push('/login-with-credentials');
+            });
+          if (accessTokenData) {
+            const { access_token, expires_in, token_type, id_token } =
+              accessTokenData;
+            // FETCH DYNAMIC GOOGLE PROFILE DATA
+            const { email, locale, name, picture } =
+              await window.middleware.google.fetchGoogleProfile(access_token);
+            // SAVE ALL RELEVANT DATA INTO REACT.CONTEXT
+            setUserData({
+              userName,
+              avatar,
+              accessToken: access_token,
+              expiresIn: expires_in,
+              tokenType: token_type,
+              idToken: id_token,
+              email,
+              locale,
+              name,
+              picture,
+            });
+            // go to main screen on successful recognition and access_token refreshment
+            history.push('/mainscreen');
+          }
+        } catch (err) {
+          // TODO: Implement valid error handling
+          // There might be a lot of reasons why the logIn function might fail (especially connection issues)
+          // console.log(err);
+        }
+      })();
     }
-  }, [recognizedUserId, setUserData, history]);
+  }, [recognizedUserId, setUserData, history, setExpiredRefreshTokenDetected]);
 
   return (
     <>
