@@ -117,6 +117,17 @@ const updateUsersRefreshToken = async (userId, newRefreshToken) => {
   }
 };
 
+const updateUsersLayout = async (userName, newLayout) => {
+  try {
+    await users.update(
+      { userName }, // specify which document to update
+      { $set: { layout: newLayout } } // specify field and value to update
+    );
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 /* DELETE */
 const deleteUser = async () => {
   // TODO: implement body of this function
@@ -130,6 +141,7 @@ module.exports = {
   readAllUserNames,
   /* UPDATE */
   updateUsersRefreshToken,
+  updateUsersLayout,
   /* DELETE */
   deleteUser,
 };

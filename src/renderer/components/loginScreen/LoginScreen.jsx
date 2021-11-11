@@ -74,7 +74,7 @@ const LoginScreen = ({ setExpiredRefreshTokenDetected }) => {
       (async function logIn() {
         try {
           // GET USER FROM DB BY GOOGLE ID
-          const { userName, avatar, googleData } =
+          const { userName, avatar, googleData, layout } =
             await window.middleware.db.users.readUserById(recognizedUserId);
           // FETCH NEW ACCESS TOKEN
           const accessTokenData = await window.middleware.google
@@ -99,6 +99,7 @@ const LoginScreen = ({ setExpiredRefreshTokenDetected }) => {
             setUserData({
               userName,
               avatar,
+              layout,
               accessToken: access_token,
               expiresIn: expires_in,
               tokenType: token_type,

@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import GridLayout from 'react-grid-layout';
 
+import UserContext from 'renderer/context/UserContext';
 import useWindowDimensions from 'renderer/hooks/useWindowDimensions';
 import TopBar from './TopBar';
 import LayoutEditingSnackbar from './LayoutEditingSnackbar';
 import WidgetContainer from '../widgets/WidgetContainer';
 import SettingsDrawer from './SettingsDrawer';
-import { widgetIdToComponent } from '../widgets/widgetIdMap';
-
-import defaultLayout from './defaultLayout';
+import { widgetIds, widgetIdToComponent } from '../widgets/widgetIdMap';
 
 /**
  * The `react-grid-layout` lib is not swapping items during horizontal dragover
@@ -53,33 +52,69 @@ const fixLayout = (layout) => {
   return fixedLayout;
 };
 
+/**
+ *
+ * @param availableWidgets = {
+ *  calendar: 'calendar',
+ *  clock: 'clock',
+ *  compliment: 'compliment',
+ *  currencies: 'currencies',
+ *  mailbox: 'mailbox',
+ *  weather: 'weather',
+ * }
+ * @param userLayout = [
+  { i: 'calendar', x: 0, y: 0, w: 1, h: 1, isResizable: false },
+  { i: 'clock', x: 1, y: 0, w: 1, h: 1, isResizable: false },
+  { i: 'compliment', x: 2, y: 0, w: 1, h: 1, isResizable: false },
+];
+ */
+const computeToolBoxItems = (availableWidgets, userLayout) => {
+  const userWidgets = userLayout.map((it) => it.i);
+  const outcome = Object.values(availableWidgets).filter(
+    (x) => userWidgets.indexOf(x) === -1
+  );
+  console.log(outcome);
+  // return undefined;
+  return outcome;
+};
+
 const MainScreen = () => {
-  // TODO: fetch layout into UserContext during login
-  // use this layout as the initial value of layout state variable
-  const [layout, setLayout] = useState(defaultLayout);
+  const { userData } = useContext(UserContext);
+  // initial layout should be fetched from database (it is stored in context)
+  const [layout, setLayout] = useState(userData.layout);
   // used to restore previous layout when user exits the editing mode
   const [previousLayout, setPreviousLayout] = useState(null);
   const [editingLayout, setEditingLayout] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   // TODO: toolbox must have all of the remaining widgets that are not displayed!
-  const [toolBoxItems, setToolBoxItems] = useState([]);
+  // initial toolBoxItems should be calculated based on available widgets and user's layout
+  const [toolBoxItems, setToolBoxItems] = useState(
+    () => computeToolBoxItems(widgetIds, userData.layout)
+    // []
+  );
   // used to restore previous toolBox state when user exits the editing mode
   const [previousToolBoxItems, setPreviousToolBoxItems] = useState(null);
   const { height, width } = useWindowDimensions();
   const gridSize = { rows: 3, cols: 3 };
+  const maxWidgetsAmount = gridSize.rows * gridSize.cols;
 
   const toggleDrawer = () => {
     setDrawerOpen((prevState) => !prevState);
   };
 
-  const onTakeItem = (item) => {
-    setToolBoxItems((prevState) => prevState.filter(({ i }) => i !== item.i));
-    setLayout((prevState) => [...prevState, item]);
+  const onTakeItem = (selectedItem) => {
+    setToolBoxItems((prevState) =>
+      prevState.filter((item) => item !== selectedItem)
+    );
+    setLayout((prevState) => [
+      ...prevState,
+      { i: selectedItem, x: 0, y: 0, w: 1, h: 1, isResizable: false },
+    ]);
   };
 
-  const onPutItem = (item) => {
-    setToolBoxItems((prevState) => [...prevState, item]);
-    setLayout((prevState) => prevState.filter(({ i }) => i !== item.i));
+  const onPutItem = (removedItem) => {
+    setToolBoxItems((prevState) => [...prevState, removedItem]);
+    setLayout((prevState) => prevState.filter(({ i }) => i !== removedItem));
   };
 
   const startLayoutEditing = () => {
@@ -96,9 +131,29 @@ const MainScreen = () => {
   };
 
   const saveLayout = () => {
-    // TODO: save layout in the database!
-    console.log('saved Layout');
-    setEditingLayout(false);
+    window.middleware.db.users
+      .updateUsersLayout(userData.userName, layout)
+      .then(() => {
+        console.log('saved Layout');
+        setEditingLayout(false);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const restoreDefaultLayout = () => {
+    console.log(window.middleware.db.defaults.layout);
+    setLayout(window.middleware.db.defaults.layout);
+    // save in the database
+    window.middleware.db.users
+      .updateUsersLayout(
+        userData.userName,
+        window.middleware.db.defaults.layout
+      )
+      .then(() => {
+        console.log('Restored default layout');
+      })
+      .catch((err) => console.log(err));
+    toggleDrawer();
   };
 
   const generateDOM = () => {
@@ -106,7 +161,7 @@ const MainScreen = () => {
       <div key={l.i} style={{ border: '1px solid white' }}>
         <WidgetContainer
           /* eslint-disable react/jsx-no-bind */
-          onRemove={onPutItem.bind(this, l)}
+          onRemove={onPutItem.bind(this, l.i)}
           editingLayout={editingLayout}
         >
           {React.createElement(widgetIdToComponent[l.i])}
@@ -120,6 +175,7 @@ const MainScreen = () => {
       <TopBar
         toggleDrawer={toggleDrawer}
         editingLayout={editingLayout}
+        toolBoxDisabled={layout.length >= maxWidgetsAmount}
         toolBoxItems={toolBoxItems}
         onTakeItem={onTakeItem}
       />
@@ -145,7 +201,9 @@ const MainScreen = () => {
       </GridLayout>
       <SettingsDrawer
         drawerOpen={drawerOpen}
+        toggle={toggleDrawer}
         startLayoutEditing={startLayoutEditing}
+        restoreDefaultLayout={restoreDefaultLayout}
       />
     </>
   );

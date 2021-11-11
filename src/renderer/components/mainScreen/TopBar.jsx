@@ -7,12 +7,19 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import PowerMenu from '../powerMenu/PowerMenu';
 import ToolBox from './ToolBox';
 
-const TopBar = ({ toggleDrawer, editingLayout, toolBoxItems, onTakeItem }) => {
+const TopBar = ({
+  toggleDrawer,
+  editingLayout,
+  toolBoxDisabled,
+  toolBoxItems,
+  onTakeItem,
+}) => {
   return (
     <AppBar position="static">
       <Toolbar>
         <ToolBox
           visible={editingLayout}
+          disabled={toolBoxDisabled}
           items={toolBoxItems}
           onTakeItem={onTakeItem}
         />

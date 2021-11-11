@@ -7,6 +7,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import EditIcon from '@material-ui/icons/Edit';
+import SettingsBackupRestoreIcon from '@material-ui/icons/SettingsBackupRestore';
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -16,11 +17,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SettingsDrawer = ({ drawerOpen, startLayoutEditing }) => {
+const SettingsDrawer = ({
+  drawerOpen,
+  toggle,
+  startLayoutEditing,
+  restoreDefaultLayout,
+}) => {
   const classes = useStyles();
 
   return (
-    <Drawer anchor="right" open={drawerOpen} classes={{ paper: classes.paper }}>
+    <Drawer
+      anchor="right"
+      open={drawerOpen}
+      onClose={toggle}
+      classes={{ paper: classes.paper }}
+    >
       <List>
         <ListItem button onClick={startLayoutEditing}>
           <ListItemIcon>
@@ -29,6 +40,12 @@ const SettingsDrawer = ({ drawerOpen, startLayoutEditing }) => {
           <ListItemText primary="Edit Layout" />
         </ListItem>
         <Divider />
+        <ListItem button onClick={restoreDefaultLayout}>
+          <ListItemIcon>
+            <SettingsBackupRestoreIcon />
+          </ListItemIcon>
+          <ListItemText primary="Restore default layout" />
+        </ListItem>
       </List>
     </Drawer>
   );

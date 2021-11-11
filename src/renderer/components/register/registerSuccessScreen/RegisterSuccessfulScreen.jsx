@@ -32,6 +32,7 @@ const RegisterSuccessfulScreen = ({
     setUserData({
       userName,
       avatar,
+      layout: window.middleware.db.defaults.layout,
       accessToken: access_token,
       expiresIn: expires_in,
       tokenType: token_type,
