@@ -2,6 +2,8 @@
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
+@import '~react-grid-layout/css/styles.css';
+@import '~react-resizable/css/styles.css';
 /*
  * This file might be usefull for global styles overrides
  */
@@ -12,4 +14,6 @@ body {
   box-sizing: border-box;
   color: #ffffff;
   background-color: #000000;
+  overflow: hidden;
+  user-select: none;
 }

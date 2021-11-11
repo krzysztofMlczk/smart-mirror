@@ -17,10 +17,10 @@ module.exports = {
 // {
 //   db: {
 //     users: {
-//       functions related to users database operations
+//       functions related to users collection operations (CRUD)
 //     },
-//     settings: {
-//       functions related to settings database operations
+//     globalSettings: {
+//       functions related to globalSettings collection operations (CRUD)
 //     },
 //     ...
 //   },
@@ -29,5 +29,8 @@ module.exports = {
 //   },
 //   google: {
 //     functions related to google integration
+//   },
+//   screenOrientation: {
+//     functions invoking bash scripts responsible for changing screen orientation
 //   }
 // }
