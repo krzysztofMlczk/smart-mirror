@@ -66,7 +66,7 @@ const LoginWithCredentials = ({
           setDisplayCreateAcc(true);
         });
       if (user) {
-        const { userName, avatar } = user;
+        const { userName, avatar, layout } = user;
         // UPDATE USER'S REFRESH TOKEN IN DB
         await window.middleware.db.users.updateUsersRefreshToken(
           id,
@@ -76,6 +76,7 @@ const LoginWithCredentials = ({
         setUserData({
           userName,
           avatar,
+          layout,
           accessToken: access_token,
           expiresIn: expires_in,
           tokenType: token_type,

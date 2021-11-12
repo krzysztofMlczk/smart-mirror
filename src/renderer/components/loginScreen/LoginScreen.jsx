@@ -13,6 +13,7 @@ import Hint from './Hint';
 import GridContainer from '../layout/GridContainer';
 import ParticleComponent from '../visuals/ParticleComponent';
 import BtnsRow from '../buttons/BtnsRow';
+import PowerMenu from '../powerMenu/PowerMenu';
 
 const useStyles = makeStyles({
   bottomLabel: {
@@ -25,6 +26,14 @@ const useStyles = makeStyles({
   separatorText: {
     fontSize: '17px',
     fontStyle: 'italic',
+  },
+  powerMenu: {
+    display: 'flex',
+    position: 'absolute',
+    height: '64px',
+    paddingRight: '24px',
+    top: 0,
+    right: 0,
   },
 });
 
@@ -65,7 +74,7 @@ const LoginScreen = ({ setExpiredRefreshTokenDetected }) => {
       (async function logIn() {
         try {
           // GET USER FROM DB BY GOOGLE ID
-          const { userName, avatar, googleData } =
+          const { userName, avatar, googleData, layout } =
             await window.middleware.db.users.readUserById(recognizedUserId);
           // FETCH NEW ACCESS TOKEN
           const accessTokenData = await window.middleware.google
@@ -90,6 +99,7 @@ const LoginScreen = ({ setExpiredRefreshTokenDetected }) => {
             setUserData({
               userName,
               avatar,
+              layout,
               accessToken: access_token,
               expiresIn: expires_in,
               tokenType: token_type,
@@ -113,6 +123,9 @@ const LoginScreen = ({ setExpiredRefreshTokenDetected }) => {
 
   return (
     <>
+      <div className={classes.powerMenu}>
+        <PowerMenu />
+      </div>
       <GridContainer>
         <Typography align="center" variant="h2">
           Face Recognition

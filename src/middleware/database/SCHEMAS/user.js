@@ -1,4 +1,5 @@
 /* SCHEME OF THE USER DOCUMENT */
+const defaultLayout = require('../DEFAULTS/defaultLayout');
 
 /**
  * Function that strips userDataSet param to db user document scheme
@@ -43,6 +44,7 @@
  *      "verifiedEmail": true
  *    }
  *  },
+ *  layout: defaultLayout,
  *  ...REST (default values for widget settings)
  * }
  */
@@ -67,6 +69,7 @@ const userScheme = (userDataSet) => {
         verifiedEmail: verified_email,
       },
     },
+    layout: defaultLayout,
     settings: {
       volume: '50',
       brightness: '100',
