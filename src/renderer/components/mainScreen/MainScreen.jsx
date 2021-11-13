@@ -141,14 +141,12 @@ const MainScreen = () => {
   };
 
   const restoreDefaultLayout = () => {
-    console.log(window.middleware.db.defaults.layout);
-    setLayout(window.middleware.db.defaults.layout);
+    const defaultLayout = window.middleware.db.defaults.layout;
+    setLayout(defaultLayout);
+    setToolBoxItems(computeToolBoxItems(widgetIds, defaultLayout));
     // save in the database
     window.middleware.db.users
-      .updateUsersLayout(
-        userData.userName,
-        window.middleware.db.defaults.layout
-      )
+      .updateUsersLayout(userData.userName, defaultLayout)
       .then(() => {
         console.log('Restored default layout');
       })
