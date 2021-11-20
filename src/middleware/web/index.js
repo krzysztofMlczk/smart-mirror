@@ -1,14 +1,21 @@
 const { ipcRenderer } = require('electron');
+const websites = require('./websites');
 
-const openGoogle = () => {
-  ipcRenderer.invoke('open-browser', 'https://www.google.com/');
-};
-
-const openNetflix = () => {
-  ipcRenderer.invoke('open-browser', 'https://netflix.com');
+const openBrowser = (website) => {
+  let url;
+  switch (website) {
+    case 'google':
+      url = websites.GOOGLE;
+      break;
+    case 'netflix':
+      url = websites.NETFLIX;
+      break;
+    default:
+      url = websites.GOOGLE;
+  }
+  ipcRenderer.invoke('open-browser', url);
 };
 
 module.exports = {
-  openGoogle,
-  openNetflix,
+  openBrowser,
 };

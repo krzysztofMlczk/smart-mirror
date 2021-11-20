@@ -26,10 +26,12 @@ const TopBar = ({
           onTakeItem={onTakeItem}
         />
         <div style={{ flexGrow: '1' }} />
-        <IconButton onClick={window.middleware.web.openNetflix}>
+        <IconButton
+          onClick={() => window.middleware.web.openBrowser('netflix')}
+        >
           <RiNetflixFill />
         </IconButton>
-        <IconButton onClick={window.middleware.web.openGoogle}>
+        <IconButton onClick={() => window.middleware.web.openBrowser('google')}>
           <FaGoogle />
         </IconButton>
         <IconButton onClick={toggleDrawer}>
