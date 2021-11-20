@@ -27,9 +27,10 @@ const RegisterSuccessfulScreen = ({
     /* eslint-disable @typescript-eslint/naming-convention */
     const { tokens, userData } = googleData;
     const { access_token, expires_in, token_type, id_token } = tokens;
-    const { email, locale, name, picture } = userData;
+    const { id, email, locale, name, picture } = userData;
     // SAVE ALL RELEVANT DATA INTO REACT.CONTEXT
     setUserData({
+      userId: id,
       userName,
       avatar,
       layout: window.middleware.db.defaults.layout,

@@ -74,6 +74,7 @@ const LoginWithCredentials = ({
         );
         // SAVE ALL RELEVANT DATA INTO REACT.CONTEXT
         setUserData({
+          userId: id,
           userName,
           avatar,
           layout,
