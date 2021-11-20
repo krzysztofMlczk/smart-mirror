@@ -34,5 +34,8 @@ module.exports = {
 //   },
 //   screenOrientation: {
 //     functions invoking bash scripts responsible for changing screen orientation
+//   },
+//   web: {
+//     functions responsible for creating renderer processes for web browsing purposes
 //   }
 // }
