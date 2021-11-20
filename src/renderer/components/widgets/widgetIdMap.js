@@ -10,7 +10,7 @@ import CalendarWidget from './CalendarWidget';
 import ClockWidget from './ClockWidget';
 import ComplimentWidget from './ComplimentWidget';
 import CurrenciesWidget from './CurrenciesWidget';
-import MailboxWidget from './MailboxWidget';
+import MailboxWidget from './mailboxWidget/MailboxWidget';
 import WeatherWidget from './WeatherWidget';
 
 /* --- IDs OF ALL AVAILABLE WIDGETS --- */

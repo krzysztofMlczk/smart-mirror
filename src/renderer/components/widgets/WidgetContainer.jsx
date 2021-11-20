@@ -4,17 +4,25 @@ import IconButton from '@material-ui/core/IconButton';
 
 const WidgetContainer = ({ onRemove, editingLayout, children }) => {
   return (
-    <div>
+    <>
       {editingLayout ? (
         <IconButton
           onClick={onRemove}
-          style={{ position: 'absolute', top: 0, right: 0 }}
+          style={{ position: 'absolute', top: 0, right: 0, zIndex: '100' }}
         >
           <CloseIcon color="secondary" />
         </IconButton>
       ) : null}
-      {children}
-    </div>
+      <div
+        style={{
+          pointerEvents: editingLayout ? 'none' : 'auto',
+          height: 'inherit',
+          width: 'inherit',
+        }}
+      >
+        {children}
+      </div>
+    </>
   );
 };
 
