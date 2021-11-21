@@ -132,10 +132,10 @@ const updateUsersRefreshToken = async (userId, newRefreshToken) => {
   }
 };
 
-const updateUsersLayout = async (userName, newLayout) => {
+const updateUsersLayout = async (userId, newLayout) => {
   try {
     await users.update(
-      { userName }, // specify which document to update
+      { 'googleData.userData.id': userId }, // specify which document to update
       { $set: { layout: newLayout } } // specify field and value to update
     );
   } catch (err) {

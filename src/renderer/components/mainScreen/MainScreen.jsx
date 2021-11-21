@@ -102,6 +102,12 @@ const MainScreen = () => {
     setDrawerOpen((prevState) => !prevState);
   };
 
+  /**
+   * Adds widget selected from the toolbox to the current layout
+   * (widget becomes visible on the screen)
+   *
+   * @param {*} selectedItem - id of a widget that should be displayed
+   */
   const onTakeItem = (selectedItem) => {
     setToolBoxItems((prevState) =>
       prevState.filter((item) => item !== selectedItem)
@@ -112,6 +118,12 @@ const MainScreen = () => {
     ]);
   };
 
+  /**
+   * Removes widget from the layout and puts its icon in the toolbox
+   * (widget stops beign visible on the screen)
+   *
+   * @param {*} removedItem - id of a widget that should be removed from the layout
+   */
   const onPutItem = (removedItem) => {
     setToolBoxItems((prevState) => [...prevState, removedItem]);
     setLayout((prevState) => prevState.filter(({ i }) => i !== removedItem));
