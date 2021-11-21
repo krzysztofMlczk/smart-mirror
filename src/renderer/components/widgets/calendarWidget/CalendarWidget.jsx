@@ -25,7 +25,7 @@ const useStyles = makeStyles({
 
 const CalendarWidget = () => {
   const [events, setEvents] = useState(null);
-  const [dayShift, setDayShift] = useState(-1);
+  const [dayShift, setDayShift] = useState(0);
   const { userData } = useContext(UserContext);
   const { accessToken, email } = userData;
   const classes = useStyles();
