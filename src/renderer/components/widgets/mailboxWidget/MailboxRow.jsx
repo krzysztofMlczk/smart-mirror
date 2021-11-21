@@ -30,7 +30,6 @@ const useStyles = (props) =>
   }));
 
 const MailboxRow = ({ email, emailId, onMarkedAsRead }) => {
-  // const [open, setOpen] = useState(false);
   const [markedAsRead, setMarkedAsRead] = useState(false);
   const { from, date, snipet, body } = email;
   const { width } = useWindowDimensions();

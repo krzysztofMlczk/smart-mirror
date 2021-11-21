@@ -56,9 +56,9 @@ const MailboxWidget = () => {
 
   const getContainerClasses = () => {
     if (loading || noUnreadAvailable) {
-      return `${classes.root} ${classes.centerAll} scroll-bar`;
+      return `${classes.root} ${classes.centerAll}`;
     }
-    return `${classes.root} scroll-bar`;
+    return `${classes.root}`;
   };
 
   return (

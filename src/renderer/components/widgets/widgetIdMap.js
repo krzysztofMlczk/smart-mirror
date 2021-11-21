@@ -6,7 +6,7 @@ import EuroSymbolIcon from '@material-ui/icons/EuroSymbol';
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 // IMPORT WIDGET
-import CalendarWidget from './CalendarWidget';
+import CalendarWidget from './calendarWidget/CalendarWidget';
 import ClockWidget from './ClockWidget';
 import ComplimentWidget from './ComplimentWidget';
 import CurrenciesWidget from './CurrenciesWidget';
