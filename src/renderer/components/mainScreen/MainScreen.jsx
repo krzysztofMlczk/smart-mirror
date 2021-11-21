@@ -144,7 +144,7 @@ const MainScreen = () => {
 
   const saveLayout = () => {
     window.middleware.db.users
-      .updateUsersLayout(userData.userName, layout)
+      .updateUsersLayout(userData.userId, layout)
       .then(() => {
         console.log('saved Layout');
         setEditingLayout(false);
@@ -158,7 +158,7 @@ const MainScreen = () => {
     setToolBoxItems(computeToolBoxItems(widgetIds, defaultLayout));
     // save in the database
     window.middleware.db.users
-      .updateUsersLayout(userData.userName, defaultLayout)
+      .updateUsersLayout(userData.userId, defaultLayout)
       .then(() => {
         console.log('Restored default layout');
       })
