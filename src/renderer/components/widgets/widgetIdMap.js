@@ -7,7 +7,7 @@ import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 // IMPORT WIDGET
 import CalendarWidget from './calendarWidget/CalendarWidget';
-import ClockWidget from './ClockWidget';
+import ClockWidget from './clockWidget/ClockWidget';
 import ComplimentWidget from './ComplimentWidget';
 import CurrenciesWidget from './CurrenciesWidget';
 import MailboxWidget from './mailboxWidget/MailboxWidget';
