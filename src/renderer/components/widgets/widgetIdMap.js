@@ -5,6 +5,7 @@ import ChatIcon from '@material-ui/icons/Chat';
 import EuroSymbolIcon from '@material-ui/icons/EuroSymbol';
 import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
+import RadioIcon from '@material-ui/icons/Radio';
 // IMPORT WIDGET
 import CalendarWidget from './calendarWidget/CalendarWidget';
 import ClockWidget from './clockWidget/ClockWidget';
@@ -12,6 +13,7 @@ import ComplimentWidget from './ComplimentWidget';
 import CurrenciesWidget from './CurrenciesWidget';
 import MailboxWidget from './mailboxWidget/MailboxWidget';
 import WeatherWidget from './WeatherWidget';
+import RadioWidget from './radioWidget/RadioWidget';
 
 /* --- IDs OF ALL AVAILABLE WIDGETS --- */
 export const widgetIds = {
@@ -21,6 +23,7 @@ export const widgetIds = {
   currencies: 'currencies',
   mailbox: 'mailbox',
   weather: 'weather',
+  radio: 'radio',
 };
 
 /* --- widgetId -> Icon MAPPING --- */
@@ -32,6 +35,7 @@ export const widgetIdToIcon = {
   [widgetIds.currencies]: EuroSymbolIcon,
   [widgetIds.mailbox]: MailOutlineIcon,
   [widgetIds.weather]: WbSunnyIcon,
+  [widgetIds.radio]: RadioIcon,
 };
 
 /* --- widgetId -> Component MAPPING --- */
@@ -43,4 +47,5 @@ export const widgetIdToComponent = {
   [widgetIds.currencies]: CurrenciesWidget,
   [widgetIds.mailbox]: MailboxWidget,
   [widgetIds.weather]: WeatherWidget,
+  [widgetIds.radio]: RadioWidget,
 };
