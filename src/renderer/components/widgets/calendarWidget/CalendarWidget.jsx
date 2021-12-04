@@ -11,8 +11,6 @@ const useStyles = makeStyles({
   root: {
     height: 'inherit',
     width: 'inherit',
-    overflowY: 'auto',
-    overflowX: 'hidden',
   },
   centerAll: {
     display: 'flex',
@@ -20,6 +18,11 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'center',
     height: '50%',
+  },
+  scrollBar: {
+    height: '70%', // needs height to make overflow works (navigator takes 30%)
+    overflowY: 'auto',
+    overflowX: 'hidden',
   },
 });
 
@@ -36,7 +39,6 @@ const CalendarWidget = () => {
     window.middleware.google.apis.calendar
       .getCalendarEvents(accessToken, email, dayShift)
       .then((data) => {
-        console.log(data);
         setEvents(data);
       })
       .catch((err) => console.log(err));
@@ -45,7 +47,11 @@ const CalendarWidget = () => {
   return (
     <div className={classes.root}>
       <CalendarNavigator dayShift={dayShift} setDayShift={setDayShift} />
-      <div className={loading || noEventsAvailable ? classes.centerAll : null}>
+      <div
+        className={
+          loading || noEventsAvailable ? classes.centerAll : classes.scrollBar
+        }
+      >
         {loading && <CircularProgress color="secondary" />}
         {noEventsAvailable && (
           <Typography variant="overline">No events</Typography>
