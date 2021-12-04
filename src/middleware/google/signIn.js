@@ -15,7 +15,7 @@ async function signInWithPopup() {
     redirect_uri: keys.redirectUri,
     client_id: keys.clientId,
     scope:
-      'profile email https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/calendar',
+      'email https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/calendar',
   };
   const authUrl = `${GOOGLE_AUTHORIZATION_URL}?${qs.stringify(urlParams)}`;
   const code = await ipcRenderer.invoke('google-auth-modal', authUrl);
