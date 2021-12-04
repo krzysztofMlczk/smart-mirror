@@ -11,7 +11,7 @@ const openBrowser = (website) => {
       url = websites.NETFLIX;
       break;
     default:
-      url = websites.GOOGLE;
+      url = website;
   }
   ipcRenderer.invoke('open-browser', url);
 };
