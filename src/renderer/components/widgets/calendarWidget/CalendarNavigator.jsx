@@ -10,7 +10,8 @@ import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100%',
+    width: '99%', // makes border of the navigator visible
+    height: '30%',
     background: theme.palette.primary.main,
   },
   title: {

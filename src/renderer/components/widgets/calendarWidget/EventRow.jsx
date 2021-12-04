@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100%',
+    width: '99%',
     background: theme.palette.primary.main,
   },
   title: {
