@@ -55,7 +55,6 @@ const WeatherWidget = () => {
           lat: locationData.latitude,
           lon: locationData.longitude,
         });
-        return data.ip;
       })
       .catch((err) => console.log(err));
   }, []);
