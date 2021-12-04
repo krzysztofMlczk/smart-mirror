@@ -69,7 +69,6 @@ export default function Radio() {
     setupApi(stationFilter)
       .then((data) => {
         setStations(data);
-        console.log(stations);
         setCurrentStationIndex(0);
       })
       .catch((err) => console.log(err));
