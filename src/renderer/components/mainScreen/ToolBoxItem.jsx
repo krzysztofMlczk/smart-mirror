@@ -8,7 +8,7 @@ const ToolBoxItem = ({ onTakeItem, item, disabled }) => {
     <div
       style={{
         opacity: disabled ? 0.3 : 1,
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        backgroundColor: 'transparent',
         width: '40px',
         height: '40px',
         display: 'flex',
@@ -16,7 +16,7 @@ const ToolBoxItem = ({ onTakeItem, item, disabled }) => {
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: '8px',
-        border: '1px solid white',
+        border: '1px solid rgb(142, 115, 180)',
       }}
       onClick={onTakeItem.bind(undefined, item)}
     >
