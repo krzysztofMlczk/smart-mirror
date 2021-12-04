@@ -15,9 +15,9 @@ const useStyles = makeStyles({
   },
 });
 
-const ClockWidget = () => {
+const ClockWidget = ({ horizontalIndex }) => {
   const [optionsDialogOpen, setOptionsDialogOpen] = useState(false);
-  const [selectedMode, setSelectedMode] = useState('defultClock');
+  const [selectedMode, setSelectedMode] = useState('defaultClock');
   const classes = useStyles();
 
   const handleClickOpen = () => {
@@ -33,13 +33,23 @@ const ClockWidget = () => {
     let current;
     switch (mode) {
       case 'defaultClock':
-        current = <DefaultClock openOptionsDialog={handleClickOpen} />;
+        current = (
+          <DefaultClock
+            horizontalIndex={horizontalIndex}
+            openOptionsDialog={handleClickOpen}
+          />
+        );
         break;
       case 'timer':
         current = <Timer openOptionsDialog={handleClickOpen} />;
         break;
       default:
-        current = <DefaultClock openOptionsDialog={handleClickOpen} />;
+        current = (
+          <DefaultClock
+            horizontalIndex={horizontalIndex}
+            openOptionsDialog={handleClickOpen}
+          />
+        );
     }
     return current;
   };
