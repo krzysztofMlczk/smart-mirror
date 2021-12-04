@@ -168,13 +168,15 @@ const MainScreen = () => {
 
   const generateDOM = () => {
     return layout.map((l) => (
-      <div key={l.i} style={{ border: '1px solid white' }}>
+      <div key={l.i} style={{ border: '0px solid white' }}>
         <WidgetContainer
           /* eslint-disable react/jsx-no-bind */
           onRemove={onPutItem.bind(this, l.i)}
           editingLayout={editingLayout}
         >
-          {React.createElement(widgetIdToComponent[l.i])}
+          {React.createElement(widgetIdToComponent[l.i], {
+            horizontalIndex: l.x,
+          })}
         </WidgetContainer>
       </div>
     ));
