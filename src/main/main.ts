@@ -65,6 +65,8 @@ ipcMain.handle('google-auth-modal', (_event, authUrl) => {
   return new Promise((resolve, reject) => {
     const authWindow = new BrowserWindow({
       parent: mainWindow as BrowserWindow | undefined,
+      width: 600,
+      height: 800,
       modal: true,
       show: false,
       frame: false, // might change in the future (when user will be allowed to close the modal)
