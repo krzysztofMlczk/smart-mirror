@@ -17,7 +17,7 @@
 }
 
 html {
-  --color-primary: #000000;
+  --color-primary: rgba(40, 31, 53, 1);
   --color-secondary: #ffffff;
 }
 
