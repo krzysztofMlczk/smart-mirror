@@ -96,6 +96,7 @@ const LoginScreen = ({ setExpiredRefreshTokenDetected }) => {
             const { email, locale, name, picture } =
               await window.middleware.google.fetchGoogleProfile(access_token);
             // SAVE ALL RELEVANT DATA INTO REACT.CONTEXT
+            console.log(access_token);
             setUserData({
               userId: recognizedUserId,
               userName,
