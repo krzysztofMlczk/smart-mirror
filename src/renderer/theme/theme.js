@@ -21,6 +21,7 @@ const theme = createTheme({
       main: '#e36bae',
     },
   },
+  // this causes errors in the console (better to set elevation for each element separately)
   // shadows: ['none'], // disable shadows globally (elevation 0)
 });
 
