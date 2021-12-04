@@ -7,6 +7,7 @@ import MailOutlineIcon from '@material-ui/icons/MailOutline';
 import WbSunnyIcon from '@material-ui/icons/WbSunny';
 import RadioIcon from '@material-ui/icons/Radio';
 import AnnouncementIcon from '@material-ui/icons/Announcement';
+import PersonOutlineIcon from '@material-ui/icons/PersonOutline';
 // IMPORT WIDGET
 import CalendarWidget from './calendarWidget/CalendarWidget';
 import ClockWidget from './clockWidget/ClockWidget';
@@ -16,6 +17,7 @@ import MailboxWidget from './mailboxWidget/MailboxWidget';
 import WeatherWidget from './weatherWidget/WeatherWidget';
 import RadioWidget from './radioWidget/RadioWidget';
 import NewsFeedWidget from './newsFeedWidget/NewsFeedWidget';
+import LoggedInUserIndicatorWidget from './loggedInUserIndicatorWidget/LoggedInUserIndicatorWidget';
 
 /* --- IDs OF ALL AVAILABLE WIDGETS --- */
 export const widgetIds = {
@@ -27,6 +29,7 @@ export const widgetIds = {
   weather: 'weather',
   radio: 'radio',
   news: 'news',
+  user: 'user',
 };
 
 /* --- widgetId -> Icon MAPPING --- */
@@ -40,6 +43,7 @@ export const widgetIdToIcon = {
   [widgetIds.weather]: WbSunnyIcon,
   [widgetIds.radio]: RadioIcon,
   [widgetIds.news]: AnnouncementIcon,
+  [widgetIds.user]: PersonOutlineIcon,
 };
 
 /* --- widgetId -> Component MAPPING --- */
@@ -53,4 +57,5 @@ export const widgetIdToComponent = {
   [widgetIds.weather]: WeatherWidget,
   [widgetIds.radio]: RadioWidget,
   [widgetIds.news]: NewsFeedWidget,
+  [widgetIds.user]: LoggedInUserIndicatorWidget,
 };
