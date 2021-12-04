@@ -60,6 +60,21 @@ const createUser = async (userData) => {
 };
 
 /* READ */
+
+// async function readWidgetSettings(userId, widgetId) {
+//   let userSettings;
+//   try {
+//     userSettings = await users.findOne(
+//       { 'googleData.userData.id': userId },
+//       { settings: 1, _id: 0 }
+//     );
+//   } catch (err) {
+//     // TODO: add error handling for CRUD operations
+//     console.log(err);
+//   }
+//   return userSettings.settings.widgets[widgetId];
+// }
+
 /**
  *
  * @param userId - googleId of a user
@@ -117,10 +132,10 @@ const updateUsersRefreshToken = async (userId, newRefreshToken) => {
   }
 };
 
-const updateUsersLayout = async (userName, newLayout) => {
+const updateUsersLayout = async (userId, newLayout) => {
   try {
     await users.update(
-      { userName }, // specify which document to update
+      { 'googleData.userData.id': userId }, // specify which document to update
       { $set: { layout: newLayout } } // specify field and value to update
     );
   } catch (err) {

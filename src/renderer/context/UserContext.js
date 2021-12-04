@@ -11,6 +11,7 @@ import { createContext } from 'react';
  * UserContext Structure
  * [defaults to null]
  * {
+ *  userId: 107622913885326078037
  *  --TAKEN FROM DB--
  *  userName: "usrNm",
  *  avatar: "https://avatars.dicebear.com/api/bottts/usrNm.svg",

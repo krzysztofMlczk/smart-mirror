@@ -2,18 +2,100 @@
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
+@import '~react-h5-audio-player/lib/styles.css';
 @import '~react-grid-layout/css/styles.css';
 @import '~react-resizable/css/styles.css';
 /*
  * This file might be usefull for global styles overrides
  */
+* {
+  --rhap_theme-color: #000 !important;
+  --rhap_background-color: #000 !important;
+  --rhap_bar-color: #e4e4e4 !important;
+  --rhap_time-color: #333 !important;
+  --rhap_font-family: inherit !important;
+}
+
+html {
+  --color-primary: rgba(40, 31, 53, 1);
+  --color-secondary: #ffffff;
+}
 
 body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  color: #ffffff;
-  background-color: #000000;
+  color: var(--color-secondary);
+  background-color: var(--color-primary);
   overflow: hidden;
   user-select: none;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-secondary);
+  border-radius: 8px;
+}
+
+/* react-h5-audio-player styles overrides (fix as library proposed solution doesn't work) */
+
+.rhap_container.player {
+  width: 60%;
+  /* background-color: rgb(76, 62, 95); */
+  background-color: transparent;
+  border: 1px solid var(--color-secondary);
+  display: flex;
+  justify-items: center;
+  padding: 1em;
+  border-radius: 10px;
+}
+
+.rhap_stacked .rhap_controls-section {
+  margin-top: 0 !important;
+}
+
+.rhap_controls-section .rhap_main-controls button[aria-label='Play'] svg path {
+  fill: var(--color-secondary) !important;
+}
+
+.rhap_controls-section .rhap_main-controls button[aria-label='Pause'] svg path {
+  fill: var(--color-secondary) !important;
+}
+
+.rhap_controls-section
+  .rhap_main-controls
+  button[aria-label='Previous']
+  svg
+  path {
+  fill: var(--color-secondary) !important;
+}
+
+.rhap_controls-section .rhap_main-controls button[aria-label='Skip'] svg path {
+  fill: var(--color-secondary) !important;
+}
+
+.stationName {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 1em;
+  width: 60%;
+  align-items: center;
+  justify-content: start;
+}
+
+.stationName img {
+  display: block;
+  width: 2.5em;
+  height: 2.5em;
+  border-radius: 50%;
+  border: 2px solid rgb(76, 62, 95);
+  margin: 0 0.25em;
+}
+
+.name {
+  width: 100%;
+  text-align: center;
 }

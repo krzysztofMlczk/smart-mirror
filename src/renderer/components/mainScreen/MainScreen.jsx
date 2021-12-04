@@ -102,6 +102,12 @@ const MainScreen = () => {
     setDrawerOpen((prevState) => !prevState);
   };
 
+  /**
+   * Adds widget selected from the toolbox to the current layout
+   * (widget becomes visible on the screen)
+   *
+   * @param {*} selectedItem - id of a widget that should be displayed
+   */
   const onTakeItem = (selectedItem) => {
     setToolBoxItems((prevState) =>
       prevState.filter((item) => item !== selectedItem)
@@ -112,6 +118,12 @@ const MainScreen = () => {
     ]);
   };
 
+  /**
+   * Removes widget from the layout and puts its icon in the toolbox
+   * (widget stops beign visible on the screen)
+   *
+   * @param {*} removedItem - id of a widget that should be removed from the layout
+   */
   const onPutItem = (removedItem) => {
     setToolBoxItems((prevState) => [...prevState, removedItem]);
     setLayout((prevState) => prevState.filter(({ i }) => i !== removedItem));
@@ -132,7 +144,7 @@ const MainScreen = () => {
 
   const saveLayout = () => {
     window.middleware.db.users
-      .updateUsersLayout(userData.userName, layout)
+      .updateUsersLayout(userData.userId, layout)
       .then(() => {
         console.log('saved Layout');
         setEditingLayout(false);
@@ -141,14 +153,12 @@ const MainScreen = () => {
   };
 
   const restoreDefaultLayout = () => {
-    console.log(window.middleware.db.defaults.layout);
-    setLayout(window.middleware.db.defaults.layout);
+    const defaultLayout = window.middleware.db.defaults.layout;
+    setLayout(defaultLayout);
+    setToolBoxItems(computeToolBoxItems(widgetIds, defaultLayout));
     // save in the database
     window.middleware.db.users
-      .updateUsersLayout(
-        userData.userName,
-        window.middleware.db.defaults.layout
-      )
+      .updateUsersLayout(userData.userId, defaultLayout)
       .then(() => {
         console.log('Restored default layout');
       })
@@ -158,13 +168,15 @@ const MainScreen = () => {
 
   const generateDOM = () => {
     return layout.map((l) => (
-      <div key={l.i} style={{ border: '1px solid white' }}>
+      <div key={l.i} style={{ border: '0px solid white' }}>
         <WidgetContainer
           /* eslint-disable react/jsx-no-bind */
           onRemove={onPutItem.bind(this, l.i)}
           editingLayout={editingLayout}
         >
-          {React.createElement(widgetIdToComponent[l.i])}
+          {React.createElement(widgetIdToComponent[l.i], {
+            horizontalIndex: l.x,
+          })}
         </WidgetContainer>
       </div>
     ));

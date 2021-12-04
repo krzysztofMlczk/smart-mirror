@@ -26,11 +26,47 @@ export default class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null;
+let browserWindow: BrowserWindow | null = null;
+
+ipcMain.handle('open-browser', (_event, url) => {
+  console.log('ipcHandle');
+  if (browserWindow === null) {
+    console.log('window opened');
+    // if not already opened
+    browserWindow = new BrowserWindow({
+      parent: mainWindow as BrowserWindow | undefined,
+      // modal: true,
+      show: false,
+      center: true,
+      resizable: false,
+      autoHideMenuBar: true,
+      darkTheme: true,
+      webPreferences: {
+        devTools: false,
+      },
+    });
+    browserWindow.loadURL(url);
+    // show the window after 'ready-to-show' event prevents visual flash
+    browserWindow.once('ready-to-show', () => {
+      browserWindow?.show();
+    });
+    // close window when minimized (don't allow to minimize the window)
+    browserWindow.on('minimize', () => {
+      browserWindow?.close();
+    });
+    // remove instance when closed (so it is not used anymore)
+    browserWindow.on('closed', () => {
+      browserWindow = null;
+    });
+  }
+});
 
 ipcMain.handle('google-auth-modal', (_event, authUrl) => {
   return new Promise((resolve, reject) => {
     const authWindow = new BrowserWindow({
       parent: mainWindow as BrowserWindow | undefined,
+      width: 600,
+      height: 800,
       modal: true,
       show: false,
       frame: false, // might change in the future (when user will be allowed to close the modal)
@@ -49,7 +85,7 @@ ipcMain.handle('google-auth-modal', (_event, authUrl) => {
           reject(new Error(`There was an error: ${urlParams.get('error')}`));
         } else if (urlParams.has('code')) {
           // Login is complete
-          // authWindow.removeAllListeners('closed'); - use it when user will be allowed to close the modal (DO THIS BEFORE closing!!!)
+          // authWindow.removeAllListeners('closed'); // use it when user will be allowed to close the modal (DO THIS BEFORE closing!!!)
           authWindow.close();
           // This is the authorization code we need to request tokens
           resolve(urlParams.get('code'));
@@ -66,7 +102,8 @@ ipcMain.handle('google-auth-modal', (_event, authUrl) => {
      */
     // authWindow.on('closed', () => {
     //   // TODO: Handle this smoothly
-    //   throw new Error('Auth window was closed by user');
+    //   authWindow = null;
+    //   // throw new Error('Auth window was closed by user');
     // });
 
     authWindow.webContents.on('will-navigate', (_ev, url) => {

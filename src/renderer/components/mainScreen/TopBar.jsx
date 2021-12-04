@@ -3,6 +3,8 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
+import { FaGoogle } from 'react-icons/fa';
+import { RiNetflixFill } from 'react-icons/ri';
 
 import PowerMenu from '../powerMenu/PowerMenu';
 import ToolBox from './ToolBox';
@@ -15,7 +17,7 @@ const TopBar = ({
   onTakeItem,
 }) => {
   return (
-    <AppBar position="static">
+    <AppBar position="static" elevation={0}>
       <Toolbar>
         <ToolBox
           visible={editingLayout}
@@ -24,6 +26,14 @@ const TopBar = ({
           onTakeItem={onTakeItem}
         />
         <div style={{ flexGrow: '1' }} />
+        <IconButton
+          onClick={() => window.middleware.web.openBrowser('netflix')}
+        >
+          <RiNetflixFill />
+        </IconButton>
+        <IconButton onClick={() => window.middleware.web.openBrowser('google')}>
+          <FaGoogle />
+        </IconButton>
         <IconButton onClick={toggleDrawer}>
           <SettingsIcon color="secondary" />
         </IconButton>
