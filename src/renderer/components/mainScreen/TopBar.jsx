@@ -17,7 +17,7 @@ const TopBar = ({
   onTakeItem,
 }) => {
   return (
-    <AppBar position="static">
+    <AppBar position="static" elevation={0}>
       <Toolbar>
         <ToolBox
           visible={editingLayout}

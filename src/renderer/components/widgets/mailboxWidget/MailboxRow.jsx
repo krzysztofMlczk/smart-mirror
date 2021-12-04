@@ -48,7 +48,7 @@ const MailboxRow = ({ email, emailId, onMarkedAsRead }) => {
   };
 
   return (
-    <Accordion className={classes.accordion}>
+    <Accordion className={classes.accordion} elevation={0}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Grid
           container
