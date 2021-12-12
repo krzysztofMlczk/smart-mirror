@@ -2,9 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { Switch, Route, useHistory } from 'react-router-dom';
 import LoginScreen from './components/loginScreen/LoginScreen';
+import LoginWithCredentials from './components/loginWithCredentials/LoginWithCredentials';
 import Register from './components/register/Register';
 import MainScreen from './components/mainScreen/MainScreen';
 import BootingScreen from './components/bootingScreen/BootingScreen';
+import routes from './routes/routes';
 import UserContext from './context/UserContext';
 import theme from './theme/theme';
 import './App.global.css';
@@ -12,6 +14,8 @@ import './App.global.css';
 export default function App() {
   const [appReady, setAppReady] = useState(false);
   const [firstUserRegistration, setFirstUserRegistration] = useState(false);
+  const [expiredRefreshTokenDetected, setExpiredRefreshTokenDetected] =
+    useState(false);
   const [userData, setUserData] = useState(null); // this will be populated using context
   const contextValue = useMemo(() => ({ userData, setUserData }), [userData]); // context value should change only when userData is updated
 
@@ -32,7 +36,7 @@ export default function App() {
         console.table({ globalSettings });
         if (!globalSettings) {
           setFirstUserRegistration(true);
-          history.push('/register');
+          history.push(routes.REGISTER);
         } else {
           window.middleware.screenOrientation.changeScreenOrientation(
             globalSettings.orientation
@@ -47,13 +51,21 @@ export default function App() {
       {appReady ? (
         <UserContext.Provider value={contextValue}>
           <Switch>
-            <Route exact path="/">
-              <LoginScreen />
+            <Route exact path={routes.LOGIN}>
+              <LoginScreen
+                setExpiredRefreshTokenDetected={setExpiredRefreshTokenDetected}
+              />
             </Route>
-            <Route path="/register">
+            <Route exact path={routes.CREDENTIALS_LOGIN}>
+              <LoginWithCredentials
+                expiredRefreshTokenDetected={expiredRefreshTokenDetected}
+                setExpiredRefreshTokenDetected={setExpiredRefreshTokenDetected}
+              />
+            </Route>
+            <Route exact path={routes.REGISTER}>
               <Register displayOrientationChooser={firstUserRegistration} />
             </Route>
-            <Route path="/mainscreen">
+            <Route exact path={routes.MAIN}>
               <MainScreen />
             </Route>
           </Switch>

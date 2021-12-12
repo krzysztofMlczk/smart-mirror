@@ -8,10 +8,12 @@ import { Link, useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 
 import UserContext from 'renderer/context/UserContext';
+import routes from '../../routes/routes';
 import Hint from './Hint';
 import GridContainer from '../layout/GridContainer';
 import ParticleComponent from '../visuals/ParticleComponent';
 import BtnsRow from '../buttons/BtnsRow';
+import PowerMenu from '../powerMenu/PowerMenu';
 
 const useStyles = makeStyles({
   bottomLabel: {
@@ -25,13 +27,30 @@ const useStyles = makeStyles({
     fontSize: '17px',
     fontStyle: 'italic',
   },
+  powerMenu: {
+    display: 'flex',
+    position: 'absolute',
+    height: '64px',
+    paddingRight: '24px',
+    top: 0,
+    right: 0,
+  },
 });
 
-const LoginScreen = () => {
+const LoginScreen = ({ setExpiredRefreshTokenDetected }) => {
   const [recognizedUserId, setRecognizedUserId] = useState(null);
   const classes = useStyles();
   const history = useHistory();
   const { setUserData } = useContext(UserContext);
+
+  // FOR DEBUG: automatic recognition
+  // useEffect(() => {
+  //   const timer = setTimeout(
+  //     () => setRecognizedUserId('107622913887326078037'),
+  //     20000
+  //   );
+  //   return () => clearTimeout(timer);
+  // });
 
   /**
    * This useEffect calls C++ face recognition module
@@ -51,49 +70,64 @@ const LoginScreen = () => {
    */
   useEffect(() => {
     /* eslint-disable @typescript-eslint/naming-convention */
-    async function logIn() {
-      // GET USER FROM DB BY GOOGLE ID
-      const { userName, avatar, googleData } =
-        await window.middleware.db.users.readUserById(recognizedUserId);
-      // FETCH NEW ACCESS TOKEN
-      const { access_token, expires_in, token_type, id_token } =
-        await window.middleware.google.refreshAccessToken(
-          googleData.tokens.refreshToken
-        );
-      // FETCH DYNAMIC GOOGLE PROFILE DATA
-      const { email, locale, name, picture } =
-        await window.middleware.google.fetchGoogleProfile(access_token);
-      // SAVE ALL RELEVANT DATA INTO REACT.CONTEXT
-      setUserData({
-        userName,
-        avatar,
-        accessToken: access_token,
-        expiresIn: expires_in,
-        tokenType: token_type,
-        idToken: id_token,
-        email,
-        locale,
-        name,
-        picture,
-      });
-    }
     if (recognizedUserId) {
-      try {
-        logIn();
-        history.push('/mainscreen'); // go to main screen on successful recognition
-      } catch (err) {
-        // TODO: Implement valid error handling
-        // There might be a lot of reasons why the logIn function might fail
-        // but the most probable is that the refreshToken is not valid anymore
-        // which happens when: https://developers.google.com/identity/protocols/oauth2#expiration
-        // to obtain new refreshToken user has to authenticate with credentials
-        history.push('/login-with-credentials');
-      }
+      (async function logIn() {
+        try {
+          // GET USER FROM DB BY GOOGLE ID
+          const { userName, avatar, googleData, layout } =
+            await window.middleware.db.users.readUserById(recognizedUserId);
+          // FETCH NEW ACCESS TOKEN
+          const accessTokenData = await window.middleware.google
+            .refreshAccessToken(googleData.tokens.refreshToken)
+            .catch((err) => {
+              // REFRESH TOKEN EXPIRATION HANDLING
+              // The most important reason why logIn function might fail
+              // trying to refresh an accessToken with expired refreshToken
+              // refreshToken might expire in scenarios mentioned here: https://developers.google.com/identity/protocols/oauth2#expiration
+              // to obtain new refreshToken user has to authenticate with credentials again
+              console.log(err);
+              setExpiredRefreshTokenDetected(true);
+              history.push(routes.CREDENTIALS_LOGIN);
+            });
+          if (accessTokenData) {
+            const { access_token, expires_in, token_type, id_token } =
+              accessTokenData;
+            // FETCH DYNAMIC GOOGLE PROFILE DATA
+            const { email, locale, name, picture } =
+              await window.middleware.google.fetchGoogleProfile(access_token);
+            // SAVE ALL RELEVANT DATA INTO REACT.CONTEXT
+            console.log(access_token);
+            setUserData({
+              userId: recognizedUserId,
+              userName,
+              avatar,
+              layout,
+              accessToken: access_token,
+              expiresIn: expires_in,
+              tokenType: token_type,
+              idToken: id_token,
+              email,
+              locale,
+              name,
+              picture,
+            });
+            // go to main screen on successful recognition and access_token refreshment
+            history.push(routes.MAIN);
+          }
+        } catch (err) {
+          // TODO: Implement valid error handling
+          // There might be a lot of reasons why the logIn function might fail (especially connection issues)
+          // console.log(err);
+        }
+      })();
     }
-  }, [recognizedUserId, setUserData, history]);
+  }, [recognizedUserId, setUserData, history, setExpiredRefreshTokenDetected]);
 
   return (
     <>
+      <div className={classes.powerMenu}>
+        <PowerMenu />
+      </div>
       <GridContainer>
         <Typography align="center" variant="h2">
           Face Recognition

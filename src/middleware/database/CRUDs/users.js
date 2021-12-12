@@ -60,6 +60,21 @@ const createUser = async (userData) => {
 };
 
 /* READ */
+
+// async function readWidgetSettings(userId, widgetId) {
+//   let userSettings;
+//   try {
+//     userSettings = await users.findOne(
+//       { 'googleData.userData.id': userId },
+//       { settings: 1, _id: 0 }
+//     );
+//   } catch (err) {
+//     // TODO: add error handling for CRUD operations
+//     console.log(err);
+//   }
+//   return userSettings.settings.widgets[widgetId];
+// }
+
 /**
  *
  * @param userId - googleId of a user
@@ -82,12 +97,9 @@ const createUser = async (userData) => {
  * }
  */
 const readUserById = async (userId) => {
-  let fetchedUser;
-  try {
-    fetchedUser = await users.findOne({ 'googleData.userData.id': userId });
-  } catch (err) {
-    // TODO: add error handling for CRUD operations
-    console.log(err);
+  const fetchedUser = await users.findOne({ 'googleData.userData.id': userId });
+  if (fetchedUser === null) {
+    throw new Error('Could not find user by id');
   }
   return fetchedUser;
 };
@@ -109,7 +121,28 @@ const readAllUserNames = async () => {
 };
 
 /* UPDATE */
-// --------
+const updateUsersRefreshToken = async (userId, newRefreshToken) => {
+  try {
+    await users.update(
+      { 'googleData.userData.id': userId }, // specify which document to update
+      { $set: { 'googleData.tokens.refreshToken': newRefreshToken } } // specify field and value to update
+    );
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const updateUsersLayout = async (userId, newLayout) => {
+  try {
+    await users.update(
+      { 'googleData.userData.id': userId }, // specify which document to update
+      { $set: { layout: newLayout } } // specify field and value to update
+    );
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 /* DELETE */
 const deleteUser = async () => {
   // TODO: implement body of this function
@@ -122,6 +155,8 @@ module.exports = {
   readUserById,
   readAllUserNames,
   /* UPDATE */
+  updateUsersRefreshToken,
+  updateUsersLayout,
   /* DELETE */
   deleteUser,
 };

@@ -4,7 +4,7 @@ import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles } from '@material-ui/styles';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   instruction: {
     fontSize: '20px',
     fontStyle: 'italic',
@@ -42,7 +42,10 @@ const useStyles = makeStyles({
     // ---------------------
     position: 'relative', // scanner must have position relative to this element
     overflow: 'hidden', // scanner should not display outside the overlay circle
-    boxShadow: '0px 0px 0px 1000px rgba(0, 0, 0, 0.7)', // blur background excluding circle in the middle
+    boxShadow: `0px 0px 0px 1000px ${theme.palette.primary.main.replace(
+      /1\)/g,
+      '0.7)'
+    )}`, // blur background excluding circle in the middle (make the box shadow see through)
   },
   // scanner bar class
   scanner: {
@@ -51,8 +54,8 @@ const useStyles = makeStyles({
     left: '0',
     width: '100%',
     height: '5px',
-    background: '#18c89b',
-    boxShadow: '0 0 70px 20px #18c89b',
+    background: '#7dd7c4',
+    boxShadow: `0 0 70px 20px #7dd7c4`,
     clipPath: 'inset(0)',
     // fade animation has to last 2 times longer than y animation (so it works properly)
     animation:
@@ -86,21 +89,21 @@ const useStyles = makeStyles({
     fontSize: '25px',
     textTransform: 'uppercase',
     letterSpacing: '2px',
-    color: '#18c89b',
+    color: '#7dd7c4',
   },
   circle: {
     display: 'inline-block',
     width: '15px',
     height: '15px',
     borderRadius: '100%',
-    background: '#ff0000',
+    background: '#a75564',
     margin: '0 6px 2px 0',
     animation: '$blinker 1.2s linear infinite',
   },
   '@keyframes blinker': {
     '50%': { opacity: 0 },
   },
-});
+}));
 
 const ScannerScreen = ({ userId, setSuccess }) => {
   const [webcamReady, setWebcamReady] = useState(false);
@@ -109,14 +112,14 @@ const ScannerScreen = ({ userId, setSuccess }) => {
   const overlayRef = useRef(null);
   const classes = useStyles();
 
-  const handleDevices = React.useCallback(
+  const handleDevices = useCallback(
     (mediaDevices) => {
       setDevices(mediaDevices.filter(({ kind }) => kind === 'videoinput'));
     },
     [setDevices]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     navigator.mediaDevices
       .enumerateDevices()
       .then(handleDevices)
@@ -127,6 +130,11 @@ const ScannerScreen = ({ userId, setSuccess }) => {
     setSuccess(true);
   }, [setSuccess]);
 
+  // FOR DEBUG: successful face registration mock up
+  // useEffect(() => {
+  //   onSuccess();
+  // }, [onSuccess]);
+  
   useEffect(() => {
     window.middleware.faceRecognition.setSuccessCallback(onSuccess);
   }, [onSuccess]);

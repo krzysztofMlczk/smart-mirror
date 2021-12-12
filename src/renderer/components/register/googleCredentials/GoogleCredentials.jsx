@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
 import AccountCircleOutlinedIcon from '@material-ui/icons/AccountCircleOutlined';
+import Typography from '@material-ui/core/Typography';
 
 import BackNextBtnsRow from '../../buttons/BackNextBtnsRow';
 import GoogleAccountRow from './GoogleAccountRow';
@@ -62,7 +63,12 @@ const GoogleCredentials = ({
         )}
         {googleAccessDenied && !currentGoogleData && (
           <>
-            Google authorization is mandatory
+            <Typography
+              variant="overline"
+              style={{ fontSize: '18px', color: 'red' }}
+            >
+              Google authorization is mandatory
+            </Typography>
             <Button
               variant="outlined"
               color="secondary"

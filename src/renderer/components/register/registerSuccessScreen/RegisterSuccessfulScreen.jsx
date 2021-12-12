@@ -4,6 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 
+import routes from '../../../routes/routes';
 import CheckmarkAnimated from './CheckmarkAnimated';
 import UserContext from '../../../context/UserContext';
 
@@ -26,11 +27,13 @@ const RegisterSuccessfulScreen = ({
     /* eslint-disable @typescript-eslint/naming-convention */
     const { tokens, userData } = googleData;
     const { access_token, expires_in, token_type, id_token } = tokens;
-    const { email, locale, name, picture } = userData;
+    const { id, email, locale, name, picture } = userData;
     // SAVE ALL RELEVANT DATA INTO REACT.CONTEXT
     setUserData({
+      userId: id,
       userName,
       avatar,
+      layout: window.middleware.db.defaults.layout,
       accessToken: access_token,
       expiresIn: expires_in,
       tokenType: token_type,
@@ -54,7 +57,7 @@ const RegisterSuccessfulScreen = ({
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      history.push('/mainscreen');
+      history.push(routes.MAIN);
     }, 3000);
     return () => clearTimeout(timer);
   });
