@@ -11,7 +11,7 @@ void IThread::Start()
   m_running = true;
   m_thread = std::thread(&IThread::ThreadFunction, this);
 
-  LOG_INFO("Started thread with id=%ld", GetId());
+  LOG_INFO("Started thread with id=%lld", GetId());
 }
 
 void IThread::Stop()
@@ -19,10 +19,10 @@ void IThread::Stop()
   if (m_running)
   {
     m_running = false;
-    LOG_INFO("Waiting for thread  with id=%ld to finish...", GetId());
+    LOG_INFO("Waiting for thread  with id=%lld to finish...", GetId());
 
     m_thread.join();
-    LOG_INFO("Joined thread with id=%ld", GetId());
+    LOG_INFO("Joined thread with id=%lld", GetId());
   }
 }
 

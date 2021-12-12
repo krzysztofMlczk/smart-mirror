@@ -30,6 +30,8 @@ void ParameterRecognize::setTo(AppSettings &settings)
 
 bool ParameterRecognize::feed(const char **params, size_t from)
 {
+  UNUSED(params);
+  UNUSED(from);
   return true;
 }
 

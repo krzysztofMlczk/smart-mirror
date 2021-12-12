@@ -9,6 +9,8 @@ using namespace event;
 
 bool FaceDetectionModeRegister::OnInit(void *data)
 {
+  UNUSED(data);
+  
   LOG_INFO("Started in register mode");
   return true;
 }
@@ -26,7 +28,7 @@ void FaceDetectionModeRegister::OnUpdate(void *data)
   {
     m_instance->Register(std::move(frame), eyesPosition);
 
-    LOG_INFO("Frame %ld/%ld : Detected eyes at (x=%d, y=%d), (x=%d, y=%d)",
+    LOG_INFO("Frame %d/%d : Detected eyes at (x=%d, y=%d), (x=%d, y=%d)",
              m_instance->m_detectedFrames.size(), m_instance->MAX_FRAMES,
              eyesPosition.first.x, eyesPosition.first.y,
              eyesPosition.second.x, eyesPosition.second.y);
@@ -57,6 +59,8 @@ void FaceDetectionModeRegister::OnStop()
 
 bool FaceDetectionModeRecognize::OnInit(void *data)
 {
+  UNUSED(data);
+  
   LOG_INFO("Started in recognize mode");
   LOG_INFO("Beginning training...");
   m_instance->Train();

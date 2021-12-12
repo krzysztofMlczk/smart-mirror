@@ -7,6 +7,8 @@
 
 #define MAX_LOG_MESSAGE_LENGTH 1024
 
+#define UNUSED(x) (void)(x)
+
 #define MATH_MAX(x, y)          \
   (                             \
       {                         \

@@ -36,3 +36,5 @@ data/*
 
 # Face recognizer
 externals/face_recognizer/facedata
+externals/face_recognizer/output
+externals/face_recognizer/src/*.o

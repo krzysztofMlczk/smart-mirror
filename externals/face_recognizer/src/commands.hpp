@@ -37,7 +37,10 @@ namespace command
 
     virtual ~CommandRecognize() = default;
 
-    void feed(const std::vector<std::string> &tokens) override {}
+    void feed(const std::vector<std::string> &tokens) override
+    {
+      UNUSED(tokens);
+    }
 
     virtual IEvent *makeEvent() const override
     {
@@ -72,7 +75,10 @@ namespace command
 
     virtual ~CommandSleep() = default;
 
-    void feed(const std::vector<std::string> &tokens) override {}
+    void feed(const std::vector<std::string> &tokens) override
+    {
+      UNUSED(tokens);
+    }
 
     virtual IEvent *makeEvent() const override
     {
@@ -87,7 +93,10 @@ namespace command
 
     virtual ~CommandWakeup() = default;
 
-    void feed(const std::vector<std::string> &tokens) override {}
+    void feed(const std::vector<std::string> &tokens) override
+    {
+      UNUSED(tokens);
+    }
 
     virtual IEvent *makeEvent() const override
     {
@@ -102,7 +111,10 @@ namespace command
 
     virtual ~CommandStop() = default;
 
-    void feed(const std::vector<std::string> &tokens) override {}
+    void feed(const std::vector<std::string> &tokens) override
+    {
+      UNUSED(tokens);
+    }
 
     virtual IEvent *makeEvent() const override
     {
